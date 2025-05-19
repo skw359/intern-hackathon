@@ -1,0 +1,9 @@
+.fc-event:hover {
+  background-color: #0c2c71 !important; /* blue-600 */
+  color: white !important;
+  cursor: pointer;
+}
+.fc-day:hover {
+  background-color: #f4f6ec !important; /* blue-600 */
+  cursor: pointer;
+}
