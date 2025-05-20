@@ -17,12 +17,7 @@ export default function Home() {
   const [dateWorkoutDescription, setDateWorkoutDescription] = useState('')
   const [workouts, setWorkouts] = useState([])
   const [error, setError] = useState(null)
-
-  const hardcodedEvent = {
-    title: 'Weekly Workout',
-    date: '2024-01-15',
-    color: '#ff4444'
-  }
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
     loadWorkouts()
@@ -32,7 +27,7 @@ export default function Home() {
     try {
       setError(null)
       const data = await getWorkouts()
-      setWorkouts([...data, hardcodedEvent])
+      setWorkouts(data)
     } catch (error) {
       console.error('Failed to load workouts:', error)
       setError('Failed to load workouts. Please check if the server is running and try again.')
@@ -72,7 +67,10 @@ export default function Home() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    if (isSubmitting) return
+    
     try {
+      setIsSubmitting(true)
       setError(null)
       await createWorkout({ 
         description: workoutDescription,
@@ -83,12 +81,17 @@ export default function Home() {
     } catch (error) {
       console.error('Failed to create workout:', error)
       setError('Failed to create workout. Please try again.')
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
   const handleDateSubmit = async (e) => {
     e.preventDefault()
+    if (isSubmitting) return
+    
     try {
+      setIsSubmitting(true)
       setError(null)
       await createWorkout({
         description: dateWorkoutDescription,
@@ -99,6 +102,8 @@ export default function Home() {
     } catch (error) {
       console.error('Failed to create workout:', error)
       setError('Failed to create workout. Please try again.')
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -120,7 +125,6 @@ export default function Home() {
   }
 
   const calendarEvents = [
-  
     ...workouts.map(workout => ({
       title: workout.description || workout.title,
       date: workout.date.split('T')[0],
@@ -183,7 +187,13 @@ export default function Home() {
                 </div>
                 <div className="button-group">
                   <button type="button" className="cancel-button" onClick={handleCloseModal}>Cancel</button>
-                  <button type="submit" className="submit-button">Submit</button>
+                  <button 
+                    type="submit" 
+                    className="submit-button"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? 'Submitting...' : 'Submit'}
+                  </button>
                 </div>
               </div>
             </form>
@@ -236,7 +246,13 @@ export default function Home() {
               <div className="form-actions">
                 <div className="button-group">
                   <button type="button" className="cancel-button" onClick={handleCloseDateModal}>Cancel</button>
-                  <button type="submit" className="submit-button">Add Workout</button>
+                  <button 
+                    type="submit" 
+                    className="submit-button"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? 'Submitting...' : 'Add Workout'}
+                  </button>
                 </div>
               </div>
             </form>
