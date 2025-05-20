@@ -11,17 +11,22 @@ A personalized workout scheduling application built with React and Express.
 - `backend/` - Express server
 
 ## Test locally
-Pull the repository to your local machine. Create a `.env` file in `/backend/` if not already present. Then:
-```bash
-# Install and build frontend
-cd frontend
-npm i && npm run build
+1. Pull the repository to your local machine.
 
-# Install and run backend
-cd ../backend
-npm i && node app.js
+2. Create `.env` in `backend/` if not already present:
 ```
-Go to your browser and connect to:
+# Required
+MONGO_URI=********
+
+# Optional
+PORT=********
+JWT_SECRET=********
+```
+3. Run the following command:
+```bash
+npm run dev
+```
+4. Go to your browser and connect to:
 ```
 localhost:3001
 ```

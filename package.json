@@ -4,5 +4,10 @@
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "mongoose": "^8.15.0"
+  },
+  "scripts": {
+    "dev": "npm run build-frontend && npm run start-backend",
+    "build-frontend": "cd frontend && npm install && npm run build",
+    "start-backend": "cd backend && npm install && node app.js"
   }
 }
