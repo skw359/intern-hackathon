@@ -15,6 +15,7 @@ export default function Login() {
       const data = await login(email, password)
       localStorage.setItem('token', data.token)
       localStorage.setItem("userId",data.userId)
+      
       navigate('/home')
     } catch (err) {
       setError('Invalid email or password')
