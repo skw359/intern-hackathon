@@ -126,7 +126,7 @@ export default function Home() {
           plugins={[dayGridPlugin, interactionPlugin]}
           initialView="dayGridMonth"
           events={[
-            { title: 'Launch', date: '2025-05-25' }
+            { title: 'Launch', date: '2025-05-25' },
             ...workouts.map(workout => ({
               title: workout.title || workout.description,
               date: workout.date,
