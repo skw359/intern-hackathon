@@ -52,21 +52,18 @@ export const register = async (name, email, password) => {
   }
 };
 
-export const getWorkouts = async (token) => {
+export const getWorkouts = async () => {
   try {
-    const response = await api.post('/workouts', { token });
+    const response = await api.get('/workouts');
     return response.data;
   } catch (error) {
     throw new Error(`Failed to fetch workouts: ${error.response?.data?.message || error.message}`);
   }
 };
 
-export const createWorkout = async (workoutData, token) => {
+export const createWorkout = async (workoutData) => {
   try {
-    const response = await api.post('/makeWorkout', {
-      ...workoutData,
-      token
-    });
+    const response = await api.post('/makeWorkout', workoutData);
     return response.data;
   } catch (error) {
     throw new Error(`Failed to create workout: ${error.response?.data?.message || error.message}`);
