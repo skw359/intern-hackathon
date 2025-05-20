@@ -8,7 +8,6 @@ const api = axios.create({
   }
 });
 
-// Add request interceptor to include token
 api.interceptors.request.use(
   config => {
     const token = localStorage.getItem('token');
@@ -53,18 +52,22 @@ export const register = async (name, email, password) => {
   }
 };
 
-export const getWorkouts = async () => {
+export const getWorkouts = async (token) => {
   try {
-    const response = await api.get('/workouts');
+    const response = await api.get('/workouts', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
     return response.data;
   } catch (error) {
     throw new Error(`Failed to fetch workouts: ${error.response?.data?.message || error.message}`);
   }
 };
 
-export const createWorkout = async (workoutData) => {
+export const createWorkout = async (workoutData, token) => {
   try {
-    const response = await api.post('/makeWorkout', workoutData);
+    const response = await api.post('/makeWorkout', workoutData, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
     return response.data;
   } catch (error) {
     throw new Error(`Failed to create workout: ${error.response?.data?.message || error.message}`);

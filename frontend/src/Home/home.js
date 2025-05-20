@@ -21,13 +21,13 @@ export default function Home() {
   useEffect(() => {
     const token = localStorage.getItem('token')
     console.log('Token:', token)
-    loadWorkouts()
+    loadWorkouts(token)
   }, [])
 
-  const loadWorkouts = async () => {
+  const loadWorkouts = async (token) => {
     try {
       setError(null)
-      const data = await getWorkouts()
+      const data = await getWorkouts(token)
       setWorkouts(data)
     } catch (error) {
       console.error('Failed to load workouts:', error)
@@ -68,13 +68,14 @@ export default function Home() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    const token = localStorage.getItem('token')
     try {
       setError(null)
       await createWorkout({ 
         description: workoutDescription,
         date: selectedDate || new Date().toISOString()
-      })
-      await loadWorkouts()
+      }, token)
+      await loadWorkouts(token)
       handleCloseModal()
     } catch (error) {
       console.error('Failed to create workout:', error)
@@ -84,13 +85,14 @@ export default function Home() {
 
   const handleDateSubmit = async (e) => {
     e.preventDefault()
+    const token = localStorage.getItem('token')
     try {
       setError(null)
       await createWorkout({
         description: dateWorkoutDescription,
         date: selectedDate
-      })
-      await loadWorkouts()
+      }, token)
+      await loadWorkouts(token)
       handleCloseDateModal()
     } catch (error) {
       console.error('Failed to create workout:', error)
