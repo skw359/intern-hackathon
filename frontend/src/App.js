@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import Login from './Login/login'
 import Register from './Register/register'
 import Home from './Home/home';
@@ -20,6 +20,7 @@ function App() {
             </ProtectedRoute>
           } 
         />
+        <Route path="*" element={<Navigate to="/home" replace />} />
       </Routes>
     </Router>
   );
