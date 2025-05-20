@@ -1,12 +1,27 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
+import { getWorkouts, createWorkout } from '../services/api'
 import "./home.css"
 
 export default function Home() {
-  const [name] = useState('John') // This would typically come from your authentication state
+  const [name] = useState('John')
   const [showModal, setShowModal] = useState(false)
   const [workoutDescription, setWorkoutDescription] = useState('')
+  const [workouts, setWorkouts] = useState([])
+
+  useEffect(() => {
+    loadWorkouts()
+  }, [])
+
+  const loadWorkouts = async () => {
+    try {
+      const data = await getWorkouts()
+      setWorkouts(data)
+    } catch (error) {
+      console.error('Failed to load workouts:', error)
+    }
+  }
 
   const handleAddPlan = () => {
     setShowModal(true)
@@ -17,10 +32,15 @@ export default function Home() {
     setWorkoutDescription('')
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log('New workout:', { description: workoutDescription })
-    handleCloseModal()
+    try {
+      await createWorkout({ description: workoutDescription })
+      await loadWorkouts()
+      handleCloseModal()
+    } catch (error) {
+      console.error('Failed to create workout:', error)
+    }
   }
 
   return (
@@ -41,10 +61,10 @@ export default function Home() {
         <FullCalendar
           plugins={[dayGridPlugin]}
           initialView="dayGridMonth"
-          events={[
-            { title: 'Meeting', date: '2025-05-21' },
-            { title: 'Launch', date: '2025-05-25' },
-          ]}
+          events={workouts.map(workout => ({
+            title: workout.description,
+            date: workout.date
+          }))}
         />
       </div>
 

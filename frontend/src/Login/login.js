@@ -1,19 +1,31 @@
 import './login.css'
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { login } from '../services/api'
 
 export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const navigate = useNavigate()
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log({ email, password })
+    try {
+      const data = await login(email, password)
+      localStorage.setItem('token', data.token)
+      navigate('/home')
+    } catch (err) {
+      setError('Invalid email or password')
+    }
   }
 
   return (
     <div className="login-container">
       <h1 className="login-logo">YouWork</h1>
       <form className="login-form" onSubmit={handleSubmit}>
+        {error && <div className="error-message">{error}</div>}
+        }
         <label>Email</label>
         <input
           type="email"
