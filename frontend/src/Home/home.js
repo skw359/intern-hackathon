@@ -11,8 +11,11 @@ export default function Home() {
       <header className="header">
         <h1 className="header-logo">YouWork</h1>
       </header>
+      <div className="greeting-container">
+        <h2 className="greeting">Welcome back, {name}!</h2>
+        <p className="greeting-subtitle">Here's your personalized workout schedule</p>
+      </div>
       <div className="calendar-container">
-        <h2 className="greeting">Hello {name}, this is your workout schedule</h2>
         <FullCalendar
           plugins={[dayGridPlugin]}
           initialView="dayGridMonth"
