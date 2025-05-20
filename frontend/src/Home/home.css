@@ -121,6 +121,20 @@
   color: #333;
 }
 
+.modal-content {
+  margin-bottom: 1.5rem;
+}
+
+.modal-content p {
+  margin: 0.5rem 0;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
 .modal-form {
   display: flex;
   flex-direction: column;

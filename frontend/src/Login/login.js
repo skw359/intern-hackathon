@@ -1,6 +1,6 @@
 import './login.css'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { login } from '../services/api'
 
 export default function Login() {
@@ -12,16 +12,10 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      setError('')
       const data = await login(email, password)
-      if (data.token) {
-        localStorage.setItem('token', data.token)
-        navigate('/home')
-      } else {
-        setError('Invalid response from server')
-      }
+      localStorage.setItem('token', data.token)
+      navigate('/home')
     } catch (err) {
-      console.error('Login error:', err)
       setError('Invalid email or password')
     }
   }
@@ -30,12 +24,12 @@ export default function Login() {
     <div className="login-container">
       <h1 className="login-logo">YouWork</h1>
       <form className="login-form" onSubmit={handleSubmit}>
-        {error && <div className="error-message" style={{ color: 'red', marginBottom: '10px' }}>{error}</div>}
+        {error && <div className="error-message">{error}</div>
         }
         <label>Email</label>
         <input
           type="email"
-          placeholder="Enter your email"
+          placeholder="Value"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
@@ -43,13 +37,13 @@ export default function Login() {
         <label>Password</label>
         <input
           type="password"
-          placeholder="Enter your password"
+          placeholder="Value"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
         <button type="submit">Sign In</button>
-        <a href="#" className="forgot-link">Forgot password?</a>
+        <Link to="/register" className="forgot-link">Don't have an account? Register</Link>
       </form>
     </div>
   )
