@@ -9,4 +9,14 @@ export const login = async (email, password) => {
   return response.data;
 };
 
+export const getWorkouts = async () => {
+  const response = await api.get('/workouts');
+  return response.data;
+};
+
+export const createWorkout = async (workoutData) => {
+  const response = await api.post('/workouts', workoutData);
+  return response.data;
+};
+
 export default api;
