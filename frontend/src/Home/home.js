@@ -4,7 +4,7 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import { useNavigate } from 'react-router-dom'
 
-import { getWorkouts, createWorkout, deleteWorkout } from '../services/api'
+import { getWorkouts, createWorkout, deleteWorkout, updateWorkout } from '../services/api'
 import "./home.css"
 
 export default function Home() {
@@ -20,6 +20,8 @@ export default function Home() {
   const [workouts, setWorkouts] = useState([])
   const [error, setError] = useState(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isEditing, setIsEditing] = useState(false)
+  const [editWorkoutDescription, setEditWorkoutDescription] = useState('')
 
   useEffect(() => {
     loadWorkouts()
@@ -54,12 +56,15 @@ export default function Home() {
 
   const handleEventClick = (clickInfo) => {
     setSelectedEvent(clickInfo.event)
+    setEditWorkoutDescription(clickInfo.event.title)
     setShowEventModal(true)
   }
 
   const handleCloseEventModal = () => {
     setShowEventModal(false)
     setSelectedEvent(null)
+    setIsEditing(false)
+    setEditWorkoutDescription('')
   }
 
   const handleCloseDateModal = () => {
@@ -129,6 +134,31 @@ export default function Home() {
     } catch (error) {
       console.error('Failed to delete workout:', error)
       setError('Failed to delete workout. Please try again.')
+    }
+  }
+
+  const handleEditClick = () => {
+    setIsEditing(true)
+  }
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault()
+    if (isSubmitting) return
+
+    try {
+      setIsSubmitting(true)
+      setError(null)
+      await updateWorkout(selectedEvent.extendedProps._id, {
+        description: editWorkoutDescription,
+        date: selectedEvent.startStr
+      })
+      await loadWorkouts()
+      handleCloseEventModal()
+    } catch (error) {
+      console.error('Failed to update workout:', error)
+      setError('Failed to update workout. Please try again.')
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -219,18 +249,50 @@ export default function Home() {
               <h3 className="modal-title">Workout Details</h3>
               <button className="close-button" onClick={handleCloseEventModal}>&times;</button>
             </div>
-            <div className="modal-content">
-              <p><strong>Date:</strong> {selectedEvent.startStr}</p>
-              <p><strong>Workout:</strong> {selectedEvent.title}</p>
-            </div>
-            <div className="modal-footer">
-              <div className="button-group">
-                <button className="cancel-button" onClick={handleCloseEventModal}>Close</button>
-                {selectedEvent.extendedProps._id && (
-                  <button className="delete-button" onClick={handleDeleteWorkout}>Delete</button>
-                )}
-              </div>
-            </div>
+            {isEditing ? (
+              <form className="modal-form" onSubmit={handleEditSubmit}>
+                <div className="form-group">
+                  <label htmlFor="editWorkoutDescription">Edit workout description:</label>
+                  <textarea
+                    id="editWorkoutDescription"
+                    value={editWorkoutDescription}
+                    onChange={(e) => setEditWorkoutDescription(e.target.value)}
+                    required
+                    className="workout-textarea"
+                  />
+                </div>
+                <div className="modal-footer">
+                  <div className="button-group">
+                    <button type="button" className="cancel-button" onClick={() => setIsEditing(false)}>Cancel</button>
+                    <button 
+                      type="submit" 
+                      className="submit-button"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? 'Saving...' : 'Save Changes'}
+                    </button>
+                  </div>
+                </div>
+              </form>
+            ) : (
+              <>
+                <div className="modal-content">
+                  <p><strong>Date:</strong> {selectedEvent.startStr}</p>
+                  <p><strong>Workout:</strong> {selectedEvent.title}</p>
+                </div>
+                <div className="modal-footer">
+                  <div className="button-group">
+                    <button className="cancel-button" onClick={handleCloseEventModal}>Close</button>
+                    {selectedEvent.extendedProps._id && (
+                      <>
+                        <button className="edit-button" onClick={handleEditClick}>Edit</button>
+                        <button className="delete-button" onClick={handleDeleteWorkout}>Delete</button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
