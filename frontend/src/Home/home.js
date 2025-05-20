@@ -3,7 +3,7 @@ import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
 
-import { createWorkout } from '../services/api'
+import { getWorkouts, createWorkout } from '../services/api'
 import "./home.css"
 
 export default function Home() {
@@ -21,7 +21,19 @@ export default function Home() {
   useEffect(() => {
     const token = localStorage.getItem('token')
     console.log('Token:', token)
+    loadWorkouts()
   }, [])
+
+  const loadWorkouts = async () => {
+    try {
+      setError(null)
+      const data = await getWorkouts()
+      setWorkouts(data)
+    } catch (error) {
+      console.error('Failed to load workouts:', error)
+      setError('Failed to load workouts. Please check if the server is running and try again.')
+    }
+  }
 
   const handleAddPlan = () => {
     setShowModal(true)
@@ -62,6 +74,7 @@ export default function Home() {
         description: workoutDescription,
         date: selectedDate || new Date().toISOString()
       })
+      await loadWorkouts()
       handleCloseModal()
     } catch (error) {
       console.error('Failed to create workout:', error)
@@ -77,6 +90,7 @@ export default function Home() {
         description: dateWorkoutDescription,
         date: selectedDate
       })
+      await loadWorkouts()
       handleCloseDateModal()
     } catch (error) {
       console.error('Failed to create workout:', error)
