@@ -86,10 +86,10 @@ export default function Home() {
         <FullCalendar
           plugins={[dayGridPlugin]}
           initialView="dayGridMonth"
-          events={workouts.map(workout => ({
+          events={[workouts.map(workout => ({
             title: workout.description,
             date: workout.date
-          })),{ id: '1', title: 'Meeting', date: '2025-05-21' }}
+          })),{ id: '1', title: 'Meeting', date: '2025-05-21' }]}
         />
       </div>
 
