@@ -54,9 +54,8 @@ export const register = async (name, email, password) => {
 
 export const getWorkouts = async (token) => {
   try {
-    const response = await api.get('/workouts', {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+    const userId = localStorage.getItem('userId');
+    const response = await api.post('/workouts', { token, userId });
     return response.data;
   } catch (error) {
     throw new Error(`Failed to fetch workouts: ${error.response?.data?.message || error.message}`);
