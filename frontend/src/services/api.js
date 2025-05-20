@@ -80,4 +80,18 @@ export const createWorkout = async (workoutData) => {
   }
 };
 
+export const deleteWorkout = async (workoutId) => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await api.delete(`/workouts/${workoutId}`, {
+      headers: {
+        authorization: `Bearer ${token}`
+      }
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(`Failed to delete workout: ${error.response?.data?.message || error.message}`);
+  }
+};
+
 export default api;
