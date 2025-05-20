@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const path = require('path');
+const User = require('./models/User');
+const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 const app = express();
@@ -15,24 +17,47 @@ mongoose.connect(process.env.MONGO_URI)
 app.use(cors());
 app.use(express.json());
 
+// Login endpoint
+app.post('/api/auth/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Find user by email
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid email or password' });
+    }
+
+    // Check password
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Invalid email or password' });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { userId: user._id, email: user.email },
+      process.env.JWT_SECRET || 'your-secret-key',
+      { expiresIn: '24h' }
+    );
+
+    res.json({ token, userId: user._id });
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // API routes
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
-// API routes should be defined before the catch-all route
-app.post('/api/auth/login', (req, res) => {
-  // Temporary login response for testing
-  res.json({ token: 'test-token' });
-});
-
 app.get('/api/workouts', (req, res) => {
-  // Temporary workouts response for testing
   res.json([]);
 });
 
 app.post('/api/makeWorkout', (req, res) => {
-  // Temporary workout creation response for testing
   res.json({ success: true });
 });
 
