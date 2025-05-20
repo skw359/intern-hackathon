@@ -65,7 +65,11 @@ export const getWorkouts = async (token) => {
 
 export const createWorkout = async (workoutData, token) => {
   try {
-    const response = await api.post('/makeWorkout', workoutData, {
+    const userId = localStorage.getItem('userId');
+    const response = await api.post('/makeWorkout', {
+      ...workoutData,
+      userId
+    }, {
       headers: { Authorization: `Bearer ${token}` }
     });
     return response.data;
