@@ -9,6 +9,7 @@ export default function Home() {
   const [showModal, setShowModal] = useState(false)
   const [showEventModal, setShowEventModal] = useState(false)
   const [selectedEvent, setSelectedEvent] = useState(null)
+  const [selectedDate, setSelectedDate] = useState(null)
   const [workoutDescription, setWorkoutDescription] = useState('')
   const [workouts, setWorkouts] = useState([])
   const [error, setError] = useState(null)
@@ -50,6 +51,7 @@ export default function Home() {
   const handleCloseModal = () => {
     setShowModal(false)
     setWorkoutDescription('')
+    setSelectedDate(null)
   }
 
   const handleEventClick = (clickInfo) => {
@@ -62,11 +64,19 @@ export default function Home() {
     setSelectedEvent(null)
   }
 
+  const handleDateClick = (arg) => {
+    setSelectedDate(arg.dateStr)
+    setShowModal(true)
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
       setError(null)
-      await createWorkout({ description: workoutDescription })
+      await createWorkout({ 
+        description: workoutDescription,
+        date: selectedDate || new Date().toISOString()
+      })
       await loadWorkouts()
       handleCloseModal()
     } catch (error) {
@@ -98,11 +108,12 @@ export default function Home() {
         <FullCalendar
           plugins={[dayGridPlugin]}
           initialView="dayGridMonth"
-          events={[workouts.map(workout => ({
+          events={workouts.map(workout => ({
             title: workout.description,
             date: workout.date
-          })),{ id: '1', title: 'Meeting', date: '2025-05-21' }]}
+          }))}
           eventClick={handleEventClick}
+          dateClick={handleDateClick}
         />
       </div>
 
@@ -110,7 +121,9 @@ export default function Home() {
         <div className="modal-overlay">
           <div className="modal">
             <div className="modal-header">
-              <h3 className="modal-title">Add New Workout</h3>
+              <h3 className="modal-title">
+                {selectedDate ? `Add Workout for ${selectedDate}` : 'Add New Workout'}
+              </h3>
               <button className="close-button" onClick={handleCloseModal}>&times;</button>
             </div>
             <form className="modal-form" onSubmit={handleSubmit}>
