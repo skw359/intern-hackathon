@@ -102,6 +102,15 @@ export default function Home() {
     }
   }
 
+  const calendarEvents = [
+    { title: 'Launch', date: '2025-05-25' },
+    ...workouts.map(workout => ({
+      title: workout.title || workout.description,
+      date: workout.date,
+      color: workout.color
+    }))
+  ]
+
   return (
     <>
       <header className="header">
@@ -125,14 +134,7 @@ export default function Home() {
         <FullCalendar
           plugins={[dayGridPlugin, interactionPlugin]}
           initialView="dayGridMonth"
-          events={[
-            { title: 'Launch', date: '2025-05-25' },
-            ...workouts.map(workout => ({
-              title: workout.title || workout.description,
-              date: workout.date,
-              color: workout.color
-            }))
-          ]}
+          events={calendarEvents}
           eventClick={handleEventClick}
           dateClick={handleDateClick}
           selectable={true}
