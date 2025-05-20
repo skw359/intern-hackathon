@@ -31,6 +31,7 @@ export default function Login() {
       <h1 className="login-logo">YouWork</h1>
       <form className="login-form" onSubmit={handleSubmit}>
         {error && <div className="error-message" style={{ color: 'red', marginBottom: '10px' }}>{error}</div>}
+        }
         <label>Email</label>
         <input
           type="email"
