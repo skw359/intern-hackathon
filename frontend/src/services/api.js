@@ -55,6 +55,7 @@ export const register = async (name, email, password) => {
 export const getWorkouts = async () => {
   try {
     const token = localStorage.getItem('token');
+    console.log(token);
     const response = await api.get('/workouts', {
       headers: {
         authorization: `Bearer${token}`
