@@ -54,8 +54,9 @@ export const register = async (name, email, password) => {
 
 export const getWorkouts = async () => {
   try {
-    const response = await api.get('/workouts');
     console.log("token")
+    const response = await api.get('/workouts');
+    
     return response.data;
   } catch (error) {
     throw new Error(`Failed to fetch workouts: ${error.response?.data?.message || error.message}`);
