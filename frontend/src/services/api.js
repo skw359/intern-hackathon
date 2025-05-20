@@ -55,7 +55,7 @@ export const register = async (name, email, password) => {
 export const getWorkouts = async () => {
   try {
     
-    const response = await api.get('/workouts',headers = `Bearer${token}`});
+    const response = await api.get('/workouts');
     
     return response.data;
   } catch (error) {
