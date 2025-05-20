@@ -1,38 +1,27 @@
 # YouWork
 
 A personalized workout scheduling application built with React and Express.
+- User authentication
+- Personalized workout scheduling
+- Interactive calendar interface
 
 ## Project Structure
 
 - `frontend/` - React application
 - `backend/` - Express server
 
-## Getting Started
+## Test locally
+Pull the repository to your local machine. Create a `.env` file in `/backend/` if not already present. Then:
+```bash
+# Install and build frontend
+cd frontend
+npm i && npm run build
 
-1. Install dependencies:
-   ```bash
-   # Install backend dependencies
-   cd backend
-   npm install
-
-   # Install frontend dependencies
-   cd ../frontend
-   npm install
-   ```
-
-2. Start the development servers:
-   ```bash
-   # Start backend server
-   cd backend
-   npm run dev
-
-   # Start frontend development server
-   cd ../frontend
-   npm start
-   ```
-
-## Features
-
-- User authentication
-- Personalized workout scheduling
-- Interactive calendar interface
+# Install and run backend
+cd ../backend
+npm i && node app.js
+```
+Go to your browser and connect to:
+```
+localhost:3001
+```
