@@ -121,7 +121,8 @@ export default function Home() {
             date: workout.date
           }))}
           eventClick={handleEventClick}
-          dateClick={()handleDateClick}
+          dateClick={handleDateClick}
+            selectable={true}
         />
       </div>
 
