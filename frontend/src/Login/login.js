@@ -1,6 +1,6 @@
 import './login.css'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { login } from '../services/api'
 
 export default function Login() {
@@ -24,7 +24,7 @@ export default function Login() {
     <div className="login-container">
       <h1 className="login-logo">YouWork</h1>
       <form className="login-form" onSubmit={handleSubmit}>
-        {error && <div className="error-message">{error}</div>
+        {error && <div className="error-message">{error}</div>}
         }
         <label>Email</label>
         <input
@@ -43,7 +43,7 @@ export default function Login() {
           required
         />
         <button type="submit">Sign In</button>
-        <a href="#" className="forgot-link">Forgot password?</a>
+        <Link to="/register" className="forgot-link">Don't have an account? Register</Link>
       </form>
     </div>
   )

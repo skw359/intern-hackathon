@@ -2,14 +2,12 @@ import axios from 'axios';
 
 const api = axios.create({
   baseURL: process.env.REACT_APP_API_URL || 'http://localhost:3001/api',
-  // Add timeout and headers
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json'
   }
 });
 
-// Add response interceptor for better error handling
 api.interceptors.response.use(
   response => response,
   error => {
@@ -29,6 +27,15 @@ export const login = async (email, password) => {
     return response.data;
   } catch (error) {
     throw new Error(`Login failed: ${error.response?.data?.message || error.message}`);
+  }
+};
+
+export const register = async (email, password) => {
+  try {
+    const response = await api.post('/auth/register', { email, password });
+    return response.data;
+  } catch (error) {
+    throw new Error(`Registration failed: ${error.response?.data?.message || error.message}`);
   }
 };
 
