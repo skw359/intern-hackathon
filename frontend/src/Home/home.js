@@ -18,15 +18,22 @@ export default function Home() {
   const [workouts, setWorkouts] = useState([])
   const [error, setError] = useState(null)
 
-
-
   useEffect(() => {
     const token = localStorage.getItem('token')
     console.log('Token:', token)
-    
+    loadWorkouts()
   }, [])
 
-  
+  const loadWorkouts = async () => {
+    try {
+      setError(null)
+      const data = await getWorkouts()
+      setWorkouts(data)
+    } catch (error) {
+      console.error('Failed to load workouts:', error)
+      setError('Failed to load workouts. Please check if the server is running and try again.')
+    }
+  }
 
   const handleAddPlan = () => {
     setShowModal(true)
