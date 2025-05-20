@@ -18,11 +18,7 @@ export default function Home() {
   const [workouts, setWorkouts] = useState([])
   const [error, setError] = useState(null)
 
-  const hardcodedEvent = {
-    title: 'Weekly Workout',
-    date: '2024-01-15',
-    color: '#ff4444'
-  }
+
 
   useEffect(() => {
     const token = localStorage.getItem('token')
