@@ -9,10 +9,30 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 3001;
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('Connected to MongoDB'))
-  .catch((error) => console.error('MongoDB connection error:', error));
+// Connect to MongoDB with specific database name
+mongoose.connect(process.env.MONGO_URI, {
+  dbName: 'Database0'
+})
+.then(async () => {
+  console.log('Connected to MongoDB');
+  
+  // Check if admin user exists, if not create it
+  try {
+    const adminUser = await User.findOne({ email: 'admin@admin' });
+    if (!adminUser) {
+      const newAdmin = new User({
+        name: 'Admin',
+        email: 'admin@admin',
+        password: 'admin'
+      });
+      await newAdmin.save();
+      console.log('Default admin user created');
+    }
+  } catch (error) {
+    console.error('Error creating admin user:', error);
+  }
+})
+.catch((error) => console.error('MongoDB connection error:', error));
 
 app.use(cors());
 app.use(express.json());
