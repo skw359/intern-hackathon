@@ -30,7 +30,7 @@ export default function Register() {
     <div className="register-container">
       <h1 className="register-logo">YouWork</h1>
       <form className="register-form" onSubmit={handleSubmit}>
-        {error && <div className="error-message">{error}</div>}
+        {error && <div className="error-message">{error}</div>
         }
         <label>Email</label>
         <input
