@@ -5,7 +5,7 @@ import "./home.css"
 
 export default function Home() {
   return (
-    <div className="p-4">
+    <div className="calendar-container">
       <FullCalendar
         plugins={[dayGridPlugin]}
         initialView="dayGridMonth"
