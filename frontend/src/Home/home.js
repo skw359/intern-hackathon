@@ -13,6 +13,7 @@ export default function Home() {
 
   useEffect(() => {
     loadWorkouts()
+    addCurrentEvent()
   }, [])
 
   const loadWorkouts = async () => {
@@ -23,6 +24,20 @@ export default function Home() {
     } catch (error) {
       console.error('Failed to load workouts:', error)
       setError('Failed to load workouts. Please check if the server is running and try again.')
+    }
+  }
+
+  const addCurrentEvent = async () => {
+    try {
+      const currentDate = new Date()
+      await createWorkout({
+        description: "Current workout session",
+        date: currentDate.toISOString()
+      })
+      await loadWorkouts()
+    } catch (error) {
+      console.error('Failed to create current event:', error)
+      setError('Failed to create current event. Please try again.')
     }
   }
 
