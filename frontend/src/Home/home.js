@@ -7,6 +7,8 @@ import "./home.css"
 export default function Home() {
   const [name] = useState('John')
   const [showModal, setShowModal] = useState(false)
+  const [showEventModal, setShowEventModal] = useState(false)
+  const [selectedEvent, setSelectedEvent] = useState(null)
   const [workoutDescription, setWorkoutDescription] = useState('')
   const [workouts, setWorkouts] = useState([])
   const [error, setError] = useState(null)
@@ -50,6 +52,16 @@ export default function Home() {
     setWorkoutDescription('')
   }
 
+  const handleEventClick = (clickInfo) => {
+    setSelectedEvent(clickInfo.event)
+    setShowEventModal(true)
+  }
+
+  const handleCloseEventModal = () => {
+    setShowEventModal(false)
+    setSelectedEvent(null)
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
@@ -86,10 +98,11 @@ export default function Home() {
         <FullCalendar
           plugins={[dayGridPlugin]}
           initialView="dayGridMonth"
-          events={[workouts.map(workout => ({
+          events={workouts.map(workout => ({
             title: workout.description,
             date: workout.date
-          })),{ id: '1', title: 'Meeting', date: '2025-05-21' }]}
+          }))}
+          eventClick={handleEventClick}
         />
       </div>
 
@@ -122,6 +135,24 @@ export default function Home() {
                 </div>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {showEventModal && selectedEvent && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <div className="modal-header">
+              <h3 className="modal-title">Workout Details</h3>
+              <button className="close-button" onClick={handleCloseEventModal}>&times;</button>
+            </div>
+            <div className="modal-content">
+              <p><strong>Date:</strong> {selectedEvent.startStr}</p>
+              <p><strong>Workout:</strong> {selectedEvent.title}</p>
+            </div>
+            <div className="modal-footer">
+              <button className="cancel-button" onClick={handleCloseEventModal}>Close</button>
+            </div>
           </div>
         </div>
       )}
