@@ -12,7 +12,7 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      setError('');
+      setError('')
       const data = await login(email, password)
       if (data.token) {
         localStorage.setItem('token', data.token)
@@ -21,7 +21,7 @@ export default function Login() {
         setError('Invalid response from server')
       }
     } catch (err) {
-      console.error('Login error:', err);
+      console.error('Login error:', err)
       setError('Invalid email or password')
     }
   }
@@ -31,7 +31,6 @@ export default function Login() {
       <h1 className="login-logo">YouWork</h1>
       <form className="login-form" onSubmit={handleSubmit}>
         {error && <div className="error-message" style={{ color: 'red', marginBottom: '10px' }}>{error}</div>}
-        }
         <label>Email</label>
         <input
           type="email"
