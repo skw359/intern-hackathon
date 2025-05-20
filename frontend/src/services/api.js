@@ -80,6 +80,20 @@ export const createWorkout = async (workoutData) => {
   }
 };
 
+export const updateWorkout = async (workoutId, workoutData) => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await api.put(`/workouts/${workoutId}`, workoutData, {
+      headers: {
+        authorization: `Bearer ${token}`
+      }
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(`Failed to update workout: ${error.response?.data?.message || error.message}`);
+  }
+};
+
 export const deleteWorkout = async (workoutId) => {
   try {
     const token = localStorage.getItem('token');
