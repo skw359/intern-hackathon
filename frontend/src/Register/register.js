@@ -4,6 +4,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { register } from '../services/api'
 
 export default function Register() {
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -19,7 +20,7 @@ export default function Register() {
     }
 
     try {
-      await register(email, password)
+      await register(name, email, password)
       navigate('/')
     } catch (err) {
       setError(err.message || 'Registration failed')
@@ -32,6 +33,14 @@ export default function Register() {
       <form className="register-form" onSubmit={handleSubmit}>
         {error && <div className="error-message">{error}</div>
         }
+        <label>Name</label>
+        <input
+          type="text"
+          placeholder="Enter your name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+        />
         <label>Email</label>
         <input
           type="email"
