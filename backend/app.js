@@ -21,6 +21,12 @@ app.get('/api/health', (req, res) => {
 });
 
 // API routes should be defined before the catch-all route
+app.post('/api/auth/signup', (req, res) => {
+  // Temporary signup response for testing
+  const { email, password } = req.body;
+  res.json({ token: 'test-token', email });
+});
+
 app.post('/api/auth/login', (req, res) => {
   // Temporary login response for testing
   res.json({ token: 'test-token' });
