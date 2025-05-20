@@ -30,9 +30,9 @@ export const login = async (email, password) => {
   }
 };
 
-export const register = async (email, password) => {
+export const register = async (name, email, password) => {
   try {
-    const response = await api.post('/auth/register', { email, password });
+    const response = await api.post('/auth/register', { name, email, password });
     return response.data;
   } catch (error) {
     throw new Error(`Registration failed: ${error.response?.data?.message || error.message}`);
