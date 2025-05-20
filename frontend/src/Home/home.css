@@ -27,3 +27,11 @@
   text-align: center;
   margin: 0;
 }
+
+.greeting {
+  text-align: left;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  color: #333;
+  font-weight: 500;
+}
