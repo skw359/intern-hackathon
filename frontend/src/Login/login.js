@@ -14,7 +14,8 @@ export default function Login() {
     try {
       const data = await login(email, password)
       localStorage.setItem('token', data.token)
-      localStorage.setItem("userId",data.userId)
+      localStorage.setItem('userId', data.userId)
+      localStorage.setItem('name', data.name)
       navigate('/home')
     } catch (err) {
       setError('Invalid email or password')

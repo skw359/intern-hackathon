@@ -9,7 +9,7 @@ import "./home.css"
 
 export default function Home() {
   const navigate = useNavigate()
-  const [name] = useState('John')
+  const [name] = useState(localStorage.getItem('name') || 'User')
   const [showModal, setShowModal] = useState(false)
   const [showEventModal, setShowEventModal] = useState(false)
   const [showDateModal, setShowDateModal] = useState(false)
@@ -41,6 +41,7 @@ export default function Home() {
   const handleLogout = () => {
     localStorage.removeItem('token')
     localStorage.removeItem('userId')
+    localStorage.removeItem('name')
     navigate('/')
   }
 
