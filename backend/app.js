@@ -3,6 +3,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const path = require('path');
 const User = require('./models/User');
+const Workout = require('./models/Workout');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
@@ -17,7 +18,6 @@ mongoose.connect(process.env.MONGO_URI)
 app.use(cors());
 app.use(express.json());
 
-// Login endpoint
 app.post('/api/auth/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -48,7 +48,6 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
-// Register endpoint
 app.post('/api/auth/register', async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -77,12 +76,26 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
-app.get('/api/workouts', (req, res) => {
-  res.json([]);
+app.get('/api/workouts', async (req, res) => {
+  try {
+    const workouts = await Workout.find().sort({ date: 1 });
+    res.json(workouts);
+  } catch (error) {
+    console.error('Error fetching workouts:', error);
+    res.status(500).json({ message: 'Failed to fetch workouts' });
+  }
 });
 
-app.post('/api/makeWorkout', (req, res) => {
-  res.json({ success: true });
+app.post('/api/makeWorkout', async (req, res) => {
+  try {
+    const { description, date } = req.body;
+    const newWorkout = new Workout({ description, date });
+    await newWorkout.save();
+    res.status(201).json(newWorkout);
+  } catch (error) {
+    console.error('Error creating workout:', error);
+    res.status(500).json({ message: 'Failed to create workout' });
+  }
 });
 
 // Serve static files from the React frontend app
