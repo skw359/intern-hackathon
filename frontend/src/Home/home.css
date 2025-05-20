@@ -36,6 +36,13 @@
   max-width: 700px;
   margin: 2rem auto 1rem;
   padding: 0 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.greeting-text {
+  flex: 1;
 }
 
 .greeting {
@@ -49,4 +56,19 @@
   font-size: 1.1rem;
   color: #666;
   margin-top: 0.5rem;
+}
+
+.add-plan-button {
+  background-color: #111;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.add-plan-button:hover {
+  background-color: #333;
 }
