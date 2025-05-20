@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
+import { useNavigate } from 'react-router-dom'
 
 import { getWorkouts, createWorkout, deleteWorkout } from '../services/api'
 import "./home.css"
 
 export default function Home() {
+  const navigate = useNavigate()
   const [name] = useState('John')
   const [showModal, setShowModal] = useState(false)
   const [showEventModal, setShowEventModal] = useState(false)
@@ -32,6 +34,12 @@ export default function Home() {
       console.error('Failed to load workouts:', error)
       setError('Failed to load workouts. Please check if the server is running and try again.')
     }
+  }
+
+  const handleLogout = () => {
+    localStorage.removeItem('token')
+    localStorage.removeItem('userId')
+    navigate('/')
   }
 
   const handleAddPlan = () => {
@@ -136,6 +144,9 @@ export default function Home() {
     <>
       <header className="header">
         <h1 className="header-logo">YouWork</h1>
+        <button className="logout-button" onClick={handleLogout}>
+          Logout
+        </button>
       </header>
       <div className="greeting-container">
         <div className="greeting-text">
