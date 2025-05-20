@@ -12,10 +12,16 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
+      setError('');
       const data = await login(email, password)
-      localStorage.setItem('token', data.token)
-      navigate('/home')
+      if (data.token) {
+        localStorage.setItem('token', data.token)
+        navigate('/home')
+      } else {
+        setError('Invalid response from server')
+      }
     } catch (err) {
+      console.error('Login error:', err);
       setError('Invalid email or password')
     }
   }
@@ -24,12 +30,11 @@ export default function Login() {
     <div className="login-container">
       <h1 className="login-logo">YouWork</h1>
       <form className="login-form" onSubmit={handleSubmit}>
-        {error && <div className="error-message">{error}</div>
-        }
+        {error && <div className="error-message" style={{ color: 'red', marginBottom: '10px' }}>{error}</div>}
         <label>Email</label>
         <input
           type="email"
-          placeholder="Value"
+          placeholder="Enter your email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
@@ -37,7 +42,7 @@ export default function Login() {
         <label>Password</label>
         <input
           type="password"
-          placeholder="Value"
+          placeholder="Enter your password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
