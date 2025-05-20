@@ -2,21 +2,52 @@ import axios from 'axios';
 
 const api = axios.create({
   baseURL: process.env.REACT_APP_API_URL || 'http://localhost:3001/api',
+  // Add timeout and headers
+  timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json'
+  }
 });
 
+// Add response interceptor for better error handling
+api.interceptors.response.use(
+  response => response,
+  error => {
+    const errorMessage = error.response?.data?.message || error.message;
+    console.error('API Error:', {
+      message: errorMessage,
+      status: error.response?.status,
+      endpoint: error.config?.url
+    });
+    throw error;
+  }
+);
+
 export const login = async (email, password) => {
-  const response = await api.post('/auth/login', { email, password });
-  return response.data;
+  try {
+    const response = await api.post('/auth/login', { email, password });
+    return response.data;
+  } catch (error) {
+    throw new Error(`Login failed: ${error.response?.data?.message || error.message}`);
+  }
 };
 
 export const getWorkouts = async () => {
-  const response = await api.get('/workouts');
-  return response.data;
+  try {
+    const response = await api.get('/workouts');
+    return response.data;
+  } catch (error) {
+    throw new Error(`Failed to fetch workouts: ${error.response?.data?.message || error.message}`);
+  }
 };
 
 export const createWorkout = async (workoutData) => {
-  const response = await api.post('/workouts', workoutData);
-  return response.data;
+  try {
+    const response = await api.post('/workouts', workoutData);
+    return response.data;
+  } catch (error) {
+    throw new Error(`Failed to create workout: ${error.response?.data?.message || error.message}`);
+  }
 };
 
 export default api;
