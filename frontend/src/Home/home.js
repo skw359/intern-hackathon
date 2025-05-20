@@ -104,7 +104,7 @@ export default function Home() {
 
   const calendarEvents = [
     { title: 'Launch', date: '2025-05-25' },
-    ...workouts.map(workout => ({
+    workouts.map(workout => ({
       title: workout.title || workout.description,
       date: workout.date
     }))
