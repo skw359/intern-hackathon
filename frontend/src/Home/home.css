@@ -151,11 +151,16 @@
   color: #9ca3af;
 }
 
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+}
+
 .button-group {
   display: flex;
   gap: 1rem;
-  justify-content: flex-end;
-  margin-top: 1rem;
 }
 
 .submit-button {
@@ -187,7 +192,6 @@
 }
 
 .disclaimer {
-  position: relative;
   background-color: #f8f9fa;
   border: 1px solid #dee2e6;
   padding: 8px 12px;
@@ -195,5 +199,4 @@
   font-size: 0.875rem;
   color: #6c757d;
   max-width: 200px;
-  margin-top: 0.5rem;
 }
