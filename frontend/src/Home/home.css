@@ -7,3 +7,9 @@
   background-color: #f4f6ec !important; /* blue-600 */
   cursor: pointer;
 }
+
+.calendar-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
