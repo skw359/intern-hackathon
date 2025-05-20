@@ -7,10 +7,15 @@ import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
 
 function App() {
+  const isAuthenticated = localStorage.getItem('token');
+
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Login />} />
+        <Route 
+          path="/" 
+          element={isAuthenticated ? <Navigate to="/home" replace /> : <Login />} 
+        />
         <Route path="/register" element={<Register />} />
         <Route 
           path="/home" 
