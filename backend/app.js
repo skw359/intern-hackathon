@@ -5,6 +5,7 @@ const path = require('path');
 const User = require('./models/User');
 const Workout = require('./models/Workout');
 const jwt = require('jsonwebtoken');
+const authMiddleware = require('./middleware/auth');
 require('dotenv').config();
 
 const app = express();
@@ -76,9 +77,9 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
-app.get('/api/workouts', async (req, res) => {
+app.get('/api/workouts', authMiddleware, async (req, res) => {
   try {
-    const workouts = await Workout.find().sort({ date: 1 });
+    const workouts = await Workout.find({ userId: req.user.userId }).sort({ date: 1 });
     res.json(workouts);
   } catch (error) {
     console.error('Error fetching workouts:', error);
@@ -86,10 +87,14 @@ app.get('/api/workouts', async (req, res) => {
   }
 });
 
-app.post('/api/makeWorkout', async (req, res) => {
+app.post('/api/makeWorkout', authMiddleware, async (req, res) => {
   try {
     const { description, date } = req.body;
-    const newWorkout = new Workout({ description, date });
+    const newWorkout = new Workout({
+      userId: req.user.userId,
+      description,
+      date
+    });
     await newWorkout.save();
     res.status(201).json(newWorkout);
   } catch (error) {
@@ -97,6 +102,7 @@ app.post('/api/makeWorkout', async (req, res) => {
     res.status(500).json({ message: 'Failed to create workout' });
   }
 });
+
 
 // Serve static files from the React frontend app
 app.use(express.static(path.join(__dirname, '../frontend/build')));
