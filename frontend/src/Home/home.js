@@ -129,7 +129,7 @@ export default function Home() {
             { title: 'Launch', date: '2025-05-25' },
             workouts.map(workout => ({
               title: workout.title || workout.description,
-              date: workout.date,
+              date: workout.date
               
             }))
           ]}
