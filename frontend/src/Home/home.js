@@ -18,6 +18,12 @@ export default function Home() {
   const [workouts, setWorkouts] = useState([])
   const [error, setError] = useState(null)
 
+  const hardcodedEvent = {
+    title: 'Weekly Workout',
+    date: '2024-01-15',
+    color: '#ff4444'
+  }
+
   useEffect(() => {
     loadWorkouts()
   }, [])
@@ -26,7 +32,7 @@ export default function Home() {
     try {
       setError(null)
       const data = await getWorkouts()
-      setWorkouts(data)
+      setWorkouts([...data, hardcodedEvent])
     } catch (error) {
       console.error('Failed to load workouts:', error)
       setError('Failed to load workouts. Please check if the server is running and try again.')
@@ -120,9 +126,11 @@ export default function Home() {
           plugins={[dayGridPlugin, interactionPlugin]}
           initialView="dayGridMonth"
           events={[
-            workouts.map(workout => ({
+            { title: 'Launch', date: '2025-05-25' }
+            ...workouts.map(workout => ({
               title: workout.title || workout.description,
-              date: workout.date
+              date: workout.date,
+              color: workout.color
             }))
           ]}
           eventClick={handleEventClick}
