@@ -8,6 +8,7 @@ export default function Home() {
   const [name] = useState('John')
   const [showModal, setShowModal] = useState(false)
   const [showEventModal, setShowEventModal] = useState(false)
+  const [showDateModal, setShowDateModal] = useState(false)
   const [selectedEvent, setSelectedEvent] = useState(null)
   const [selectedDate, setSelectedDate] = useState(null)
   const [workoutDescription, setWorkoutDescription] = useState('')
@@ -64,9 +65,14 @@ export default function Home() {
     setSelectedEvent(null)
   }
 
+  const handleCloseDateModal = () => {
+    setShowDateModal(false)
+    setSelectedDate(null)
+  }
+
   const handleDateClick = (arg) => {
     setSelectedDate(arg.dateStr)
-    setShowModal(true)
+    setShowDateModal(true)
   }
 
   const handleSubmit = async (e) => {
@@ -121,9 +127,7 @@ export default function Home() {
         <div className="modal-overlay">
           <div className="modal">
             <div className="modal-header">
-              <h3 className="modal-title">
-                {selectedDate ? `Add Workout for ${selectedDate}` : 'Add New Workout'}
-              </h3>
+              <h3 className="modal-title">Add New Workout</h3>
               <button className="close-button" onClick={handleCloseModal}>&times;</button>
             </div>
             <form className="modal-form" onSubmit={handleSubmit}>
@@ -165,6 +169,34 @@ export default function Home() {
             </div>
             <div className="modal-footer">
               <button className="cancel-button" onClick={handleCloseEventModal}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showDateModal && selectedDate && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <div className="modal-header">
+              <h3 className="modal-title">Selected Date: {selectedDate}</h3>
+              <button className="close-button" onClick={handleCloseDateModal}>&times;</button>
+            </div>
+            <div className="modal-content">
+              <p>Would you like to add a workout for this date?</p>
+            </div>
+            <div className="modal-footer">
+              <div className="button-group">
+                <button className="cancel-button" onClick={handleCloseDateModal}>Cancel</button>
+                <button 
+                  className="submit-button" 
+                  onClick={() => {
+                    handleCloseDateModal();
+                    setShowModal(true);
+                  }}
+                >
+                  Add Workout
+                </button>
+              </div>
             </div>
           </div>
         </div>
