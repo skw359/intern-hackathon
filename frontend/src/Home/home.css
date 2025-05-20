@@ -10,7 +10,7 @@
 
 .calendar-container {
   max-width: 700px;
-  margin: 2rem auto;
+  margin: 1rem auto;
   padding: 2rem;
   background-color: white;
   border: 1px solid #d1d5db;
@@ -32,10 +32,21 @@
   margin: 0;
 }
 
+.greeting-container {
+  max-width: 700px;
+  margin: 2rem auto 1rem;
+  padding: 0 1rem;
+}
+
 .greeting {
-  text-align: left;
-  margin-bottom: 1.5rem;
-  font-size: 1.5rem;
-  color: #333;
-  font-weight: 500;
+  font-size: 2rem;
+  color: #1a1a1a;
+  font-weight: 600;
+  margin: 0;
+}
+
+.greeting-subtitle {
+  font-size: 1.1rem;
+  color: #666;
+  margin-top: 0.5rem;
 }
