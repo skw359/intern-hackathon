@@ -125,11 +125,13 @@ export default function Home() {
         <FullCalendar
           plugins={[dayGridPlugin, interactionPlugin]}
           initialView="dayGridMonth"
-          events={workouts.map(workout => ({
+          events={[,
+          { title: 'Launch', date: '2025-05-25' },
+            workouts.map(workout => ({
             title: workout.title || workout.description,
             date: workout.date,
             color: workout.color
-          }))}
+          }))]}
           eventClick={handleEventClick}
           dateClick={handleDateClick}
           selectable={true}
