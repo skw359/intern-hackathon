@@ -25,6 +25,8 @@ export default function Home() {
   }
 
   useEffect(() => {
+    const token = localStorage.getItem('token')
+    console.log('Token:', token)
     loadWorkouts()
   }, [])
 
