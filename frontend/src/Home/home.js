@@ -6,8 +6,7 @@ import "./home.css"
 export default function Home() {
   const [name] = useState('John') // This would typically come from your authentication state
   const [showModal, setShowModal] = useState(false)
-  const [planTitle, setPlanTitle] = useState('')
-  const [planDate, setPlanDate] = useState('')
+  const [workoutDescription, setWorkoutDescription] = useState('')
 
   const handleAddPlan = () => {
     setShowModal(true)
@@ -15,13 +14,12 @@ export default function Home() {
 
   const handleCloseModal = () => {
     setShowModal(false)
-    setPlanTitle('')
-    setPlanDate('')
+    setWorkoutDescription('')
   }
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    console.log('New plan:', { title: planTitle, date: planDate })
+    console.log('New workout:', { description: workoutDescription })
     handleCloseModal()
   }
 
@@ -54,31 +52,24 @@ export default function Home() {
         <div className="modal-overlay">
           <div className="modal">
             <div className="modal-header">
-              <h3 className="modal-title">Add New Plan</h3>
+              <h3 className="modal-title">Add New Workout</h3>
               <button className="close-button" onClick={handleCloseModal}>&times;</button>
             </div>
             <form className="modal-form" onSubmit={handleSubmit}>
               <div className="form-group">
-                <label htmlFor="planTitle">Plan Title</label>
-                <input
-                  type="text"
-                  id="planTitle"
-                  value={planTitle}
-                  onChange={(e) => setPlanTitle(e.target.value)}
+                <label htmlFor="workoutDescription">Describe your desired workout!</label>
+                <textarea
+                  id="workoutDescription"
+                  value={workoutDescription}
+                  onChange={(e) => setWorkoutDescription(e.target.value)}
                   required
+                  className="workout-textarea"
                 />
               </div>
-              <div className="form-group">
-                <label htmlFor="planDate">Date</label>
-                <input
-                  type="date"
-                  id="planDate"
-                  value={planDate}
-                  onChange={(e) => setPlanDate(e.target.value)}
-                  required
-                />
+              <div className="button-group">
+                <button type="button" className="cancel-button" onClick={handleCloseModal}>Cancel</button>
+                <button type="submit" className="submit-button">Submit</button>
               </div>
-              <button type="submit" className="submit-button">Add Plan</button>
             </form>
           </div>
         </div>
