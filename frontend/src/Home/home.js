@@ -18,33 +18,24 @@ export default function Home() {
   const [workouts, setWorkouts] = useState([])
   const [error, setError] = useState(null)
 
+  const hardcodedEvent = {
+    title: 'Weekly Workout',
+    date: '2024-01-15',
+    color: '#ff4444'
+  }
+
   useEffect(() => {
     loadWorkouts()
-    addCurrentEvent()
   }, [])
 
   const loadWorkouts = async () => {
     try {
       setError(null)
       const data = await getWorkouts()
-      setWorkouts(data)
+      setWorkouts([...data, hardcodedEvent])
     } catch (error) {
       console.error('Failed to load workouts:', error)
       setError('Failed to load workouts. Please check if the server is running and try again.')
-    }
-  }
-
-  const addCurrentEvent = async () => {
-    try {
-      const currentDate = new Date()
-      await createWorkout({
-        description: "Current workout session",
-        date: currentDate.toISOString()
-      })
-      await loadWorkouts()
-    } catch (error) {
-      console.error('Failed to create current event:', error)
-      setError('Failed to create current event. Please try again.')
     }
   }
 
@@ -132,11 +123,12 @@ export default function Home() {
       )}
       <div className="calendar-container">
         <FullCalendar
-          plugins={[dayGridPlugin,interactionPlugin]}
+          plugins={[dayGridPlugin, interactionPlugin]}
           initialView="dayGridMonth"
           events={workouts.map(workout => ({
-            title: workout.description,
-            date: workout.date
+            title: workout.title || workout.description,
+            date: workout.date,
+            color: workout.color
           }))}
           eventClick={handleEventClick}
           dateClick={handleDateClick}
