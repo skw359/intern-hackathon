@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://m1ftw9nd-3001.use.devtunnels.ms/api',
+  baseURL: '/api',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json'
@@ -12,7 +12,7 @@ api.interceptors.request.use(
   config => {
     const token = localStorage.getItem('token');
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      config.headers.authorization = `Bearer ${token}`;
     }
     return config;
   },
@@ -54,7 +54,12 @@ export const register = async (name, email, password) => {
 
 export const getWorkouts = async () => {
   try {
-    const response = await api.get('/workouts');
+    const token = localStorage.getItem('token');
+    const response = await api.get('/workouts', {
+      headers: {
+        authorization: `Bearer ${token}`
+      }
+    });
     return response.data;
   } catch (error) {
     throw new Error(`Failed to fetch workouts: ${error.response?.data?.message || error.message}`);
@@ -63,10 +68,43 @@ export const getWorkouts = async () => {
 
 export const createWorkout = async (workoutData) => {
   try {
-    const response = await api.post('/makeWorkout', workoutData);
+    const token = localStorage.getItem('token');
+    const response = await api.post('/makeWorkout', workoutData, {
+      headers: {
+        authorization: `Bearer ${token}`
+      }
+    });
     return response.data;
   } catch (error) {
     throw new Error(`Failed to create workout: ${error.response?.data?.message || error.message}`);
+  }
+};
+
+export const updateWorkout = async (workoutId, workoutData) => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await api.put(`/workouts/${workoutId}`, workoutData, {
+      headers: {
+        authorization: `Bearer ${token}`
+      }
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(`Failed to update workout: ${error.response?.data?.message || error.message}`);
+  }
+};
+
+export const deleteWorkout = async (workoutId) => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await api.delete(`/workouts/${workoutId}`, {
+      headers: {
+        authorization: `Bearer ${token}`
+      }
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(`Failed to delete workout: ${error.response?.data?.message || error.message}`);
   }
 };
 

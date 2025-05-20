@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react'
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
+import { useNavigate } from 'react-router-dom'
 
-import { getWorkouts, createWorkout } from '../services/api'
+import { getWorkouts, createWorkout, deleteWorkout, updateWorkout } from '../services/api'
 import "./home.css"
 
 export default function Home() {
+  const navigate = useNavigate()
   const [name] = useState('John')
   const [showModal, setShowModal] = useState(false)
   const [showEventModal, setShowEventModal] = useState(false)
@@ -17,6 +19,9 @@ export default function Home() {
   const [dateWorkoutDescription, setDateWorkoutDescription] = useState('')
   const [workouts, setWorkouts] = useState([])
   const [error, setError] = useState(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isEditing, setIsEditing] = useState(false)
+  const [editWorkoutDescription, setEditWorkoutDescription] = useState('')
 
   useEffect(() => {
     loadWorkouts()
@@ -33,6 +38,12 @@ export default function Home() {
     }
   }
 
+  const handleLogout = () => {
+    localStorage.removeItem('token')
+    localStorage.removeItem('userId')
+    navigate('/')
+  }
+
   const handleAddPlan = () => {
     setShowModal(true)
   }
@@ -45,12 +56,15 @@ export default function Home() {
 
   const handleEventClick = (clickInfo) => {
     setSelectedEvent(clickInfo.event)
+    setEditWorkoutDescription(clickInfo.event.title)
     setShowEventModal(true)
   }
 
   const handleCloseEventModal = () => {
     setShowEventModal(false)
     setSelectedEvent(null)
+    setIsEditing(false)
+    setEditWorkoutDescription('')
   }
 
   const handleCloseDateModal = () => {
@@ -66,7 +80,10 @@ export default function Home() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    if (isSubmitting) return
+    
     try {
+      setIsSubmitting(true)
       setError(null)
       await createWorkout({ 
         description: workoutDescription,
@@ -77,12 +94,17 @@ export default function Home() {
     } catch (error) {
       console.error('Failed to create workout:', error)
       setError('Failed to create workout. Please try again.')
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
   const handleDateSubmit = async (e) => {
     e.preventDefault()
+    if (isSubmitting) return
+    
     try {
+      setIsSubmitting(true)
       setError(null)
       await createWorkout({
         description: dateWorkoutDescription,
@@ -93,13 +115,68 @@ export default function Home() {
     } catch (error) {
       console.error('Failed to create workout:', error)
       setError('Failed to create workout. Please try again.')
+    } finally {
+      setIsSubmitting(false)
     }
   }
+
+  const handleDeleteWorkout = async () => {
+    if (!selectedEvent || !selectedEvent.extendedProps._id) {
+      setError('Cannot delete this event')
+      return
+    }
+
+    try {
+      setError(null)
+      await deleteWorkout(selectedEvent.extendedProps._id)
+      await loadWorkouts()
+      handleCloseEventModal()
+    } catch (error) {
+      console.error('Failed to delete workout:', error)
+      setError('Failed to delete workout. Please try again.')
+    }
+  }
+
+  const handleEditClick = () => {
+    setIsEditing(true)
+  }
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault()
+    if (isSubmitting) return
+
+    try {
+      setIsSubmitting(true)
+      setError(null)
+      await updateWorkout(selectedEvent.extendedProps._id, {
+        description: editWorkoutDescription,
+        date: selectedEvent.startStr
+      })
+      await loadWorkouts()
+      handleCloseEventModal()
+    } catch (error) {
+      console.error('Failed to update workout:', error)
+      setError('Failed to update workout. Please try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const calendarEvents = [
+    ...workouts.map(workout => ({
+      title: workout.description || workout.title,
+      date: workout.date.split('T')[0],
+      _id: workout._id
+    }))
+  ]
 
   return (
     <>
       <header className="header">
         <h1 className="header-logo">YouWork</h1>
+        <button className="logout-button" onClick={handleLogout}>
+          Logout
+        </button>
       </header>
       <div className="greeting-container">
         <div className="greeting-text">
@@ -119,13 +196,7 @@ export default function Home() {
         <FullCalendar
           plugins={[dayGridPlugin, interactionPlugin]}
           initialView="dayGridMonth"
-          events={[
-            { title: 'Launch', date: '2025-05-25' },
-            ...workouts.map(workout => ({
-              title: workout.title || workout.description,
-              date: workout.date
-            }))
-          ]}
+          events={calendarEvents}
           eventClick={handleEventClick}
           dateClick={handleDateClick}
           selectable={true}
@@ -157,7 +228,13 @@ export default function Home() {
                 </div>
                 <div className="button-group">
                   <button type="button" className="cancel-button" onClick={handleCloseModal}>Cancel</button>
-                  <button type="submit" className="submit-button">Submit</button>
+                  <button 
+                    type="submit" 
+                    className="submit-button"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? 'Submitting...' : 'Submit'}
+                  </button>
                 </div>
               </div>
             </form>
@@ -172,13 +249,50 @@ export default function Home() {
               <h3 className="modal-title">Workout Details</h3>
               <button className="close-button" onClick={handleCloseEventModal}>&times;</button>
             </div>
-            <div className="modal-content">
-              <p><strong>Date:</strong> {selectedEvent.startStr}</p>
-              <p><strong>Workout:</strong> {selectedEvent.title}</p>
-            </div>
-            <div className="modal-footer">
-              <button className="cancel-button" onClick={handleCloseEventModal}>Close</button>
-            </div>
+            {isEditing ? (
+              <form className="modal-form" onSubmit={handleEditSubmit}>
+                <div className="form-group">
+                  <label htmlFor="editWorkoutDescription">Edit workout description:</label>
+                  <textarea
+                    id="editWorkoutDescription"
+                    value={editWorkoutDescription}
+                    onChange={(e) => setEditWorkoutDescription(e.target.value)}
+                    required
+                    className="workout-textarea"
+                  />
+                </div>
+                <div className="modal-footer">
+                  <div className="button-group">
+                    <button type="button" className="cancel-button" onClick={() => setIsEditing(false)}>Cancel</button>
+                    <button 
+                      type="submit" 
+                      className="submit-button"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? 'Saving...' : 'Save Changes'}
+                    </button>
+                  </div>
+                </div>
+              </form>
+            ) : (
+              <>
+                <div className="modal-content">
+                  <p><strong>Date:</strong> {selectedEvent.startStr}</p>
+                  <p><strong>Workout:</strong> {selectedEvent.title}</p>
+                </div>
+                <div className="modal-footer">
+                  <div className="button-group">
+                    <button className="cancel-button" onClick={handleCloseEventModal}>Close</button>
+                    {selectedEvent.extendedProps._id && (
+                      <>
+                        <button className="edit-button" onClick={handleEditClick}>Edit</button>
+                        <button className="delete-button" onClick={handleDeleteWorkout}>Delete</button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
@@ -205,7 +319,13 @@ export default function Home() {
               <div className="form-actions">
                 <div className="button-group">
                   <button type="button" className="cancel-button" onClick={handleCloseDateModal}>Cancel</button>
-                  <button type="submit" className="submit-button">Add Workout</button>
+                  <button 
+                    type="submit" 
+                    className="submit-button"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? 'Submitting...' : 'Add Workout'}
+                  </button>
                 </div>
               </div>
             </form>

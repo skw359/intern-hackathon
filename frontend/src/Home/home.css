@@ -1,10 +1,44 @@
+/* Existing styles */
+.header {
+  background-color: #fff;
+  padding: 1rem;
+  border-bottom: 1px solid #d1d5db;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-logo {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  text-align: center;
+  margin: 0;
+}
+
+.logout-button {
+  background-color: #dc2626;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.logout-button:hover {
+  background-color: #b91c1c;
+}
+
 .fc-event:hover {
-  background-color: #0c2c71 !important; /* blue-600 */
+  background-color: #0c2c71 !important;
   color: white !important;
   cursor: pointer;
 }
+
 .fc-day:hover {
-  background-color: #f4f6ec !important; /* blue-600 */
+  background-color: #f4f6ec !important;
   cursor: pointer;
 }
 
@@ -16,20 +50,6 @@
   border: 1px solid #d1d5db;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.header {
-  background-color: #fff;
-  padding: 1rem;
-  border-bottom: 1px solid #d1d5db;
-}
-
-.header-logo {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 32px;
-  font-weight: 700;
-  text-align: center;
-  margin: 0;
 }
 
 .greeting-container {
@@ -187,8 +207,13 @@
   cursor: pointer;
 }
 
-.submit-button:hover {
+.submit-button:hover:not(:disabled) {
   background-color: #333;
+}
+
+.submit-button:disabled {
+  background-color: #666;
+  cursor: not-allowed;
 }
 
 .cancel-button {
@@ -203,6 +228,34 @@
 
 .cancel-button:hover {
   background-color: #f5f5f5;
+}
+
+.delete-button {
+  background-color: #dc2626;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.delete-button:hover {
+  background-color: #b91c1c;
+}
+
+.edit-button {
+  background-color: #0284c7;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.edit-button:hover {
+  background-color: #0369a1;
 }
 
 .disclaimer {
