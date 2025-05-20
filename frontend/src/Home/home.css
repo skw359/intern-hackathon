@@ -187,9 +187,7 @@
 }
 
 .disclaimer {
-  position: absolute;
-  bottom: 0;
-  left: 0;
+  position: relative;
   background-color: #f8f9fa;
   border: 1px solid #dee2e6;
   padding: 8px 12px;
@@ -197,4 +195,5 @@
   font-size: 0.875rem;
   color: #6c757d;
   max-width: 200px;
+  margin-top: 0.5rem;
 }
