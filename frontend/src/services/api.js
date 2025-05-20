@@ -12,7 +12,7 @@ api.interceptors.request.use(
   config => {
     const token = localStorage.getItem('token');
     if (token) {
-      config.headers.authorization = `Bearer${token}`;
+      config.headers.authorization = `Bearer ${token}`;
     }
     return config;
   },
@@ -58,7 +58,7 @@ export const getWorkouts = async () => {
     console.log(token);
     const response = await api.get('/workouts', {
       headers: {
-        authorization: `Bearer${token}`
+        authorization: `Bearer ${token}`
       }
     });
     return response.data;
@@ -72,7 +72,7 @@ export const createWorkout = async (workoutData) => {
     const token = localStorage.getItem('token');
     const response = await api.post('/makeWorkout', workoutData, {
       headers: {
-        authorization: `Bearer${token}`
+        authorization: `Bearer ${token}`
       }
     });
     return response.data;
