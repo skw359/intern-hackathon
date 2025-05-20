@@ -112,7 +112,7 @@ export default function Home() {
       )}
       <div className="calendar-container">
         <FullCalendar
-          plugins={[dayGridPlugin]}
+          plugins={[dayGridPlugin,interactionPlugin]}
           initialView="dayGridMonth"
           events={workouts.map(workout => ({
             title: workout.description,
