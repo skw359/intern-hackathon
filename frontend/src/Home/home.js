@@ -3,7 +3,7 @@ import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
 
-import { getWorkouts, createWorkout } from '../services/api'
+import { getWorkouts, createWorkout, deleteWorkout } from '../services/api'
 import "./home.css"
 
 export default function Home() {
@@ -102,11 +102,29 @@ export default function Home() {
     }
   }
 
+  const handleDeleteWorkout = async () => {
+    if (!selectedEvent || !selectedEvent.extendedProps._id) {
+      setError('Cannot delete this event')
+      return
+    }
+
+    try {
+      setError(null)
+      await deleteWorkout(selectedEvent.extendedProps._id)
+      await loadWorkouts()
+      handleCloseEventModal()
+    } catch (error) {
+      console.error('Failed to delete workout:', error)
+      setError('Failed to delete workout. Please try again.')
+    }
+  }
+
   const calendarEvents = [
     { title: 'Launch', date: '2025-05-25' },
     ...workouts.map(workout => ({
       title: workout.description || workout.title,
-      date: workout.date.split('T')[0]
+      date: workout.date.split('T')[0],
+      _id: workout._id
     }))
   ]
 
@@ -185,7 +203,12 @@ export default function Home() {
               <p><strong>Workout:</strong> {selectedEvent.title}</p>
             </div>
             <div className="modal-footer">
-              <button className="cancel-button" onClick={handleCloseEventModal}>Close</button>
+              <div className="button-group">
+                <button className="cancel-button" onClick={handleCloseEventModal}>Close</button>
+                {selectedEvent.extendedProps._id && (
+                  <button className="delete-button" onClick={handleDeleteWorkout}>Delete</button>
+                )}
+              </div>
             </div>
           </div>
         </div>
