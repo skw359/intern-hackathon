@@ -16,16 +16,16 @@ app.use(cors());
 app.use(express.json());
 
 // Serve static files from the React frontend app
-app.use('/login', express.static(path.join(__dirname, '../frontend/build')));
-
-// Handle React routing, return all requests to React app
-app.get('/login/*', function(req, res) {
-  res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
-});
+app.use(express.static(path.join(__dirname, '../frontend/build')));
 
 // Basic health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
+});
+
+// Handle React routing, return all requests to React app
+app.get('*', function(req, res) {
+  res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
 });
 
 app.listen(port, () => {
