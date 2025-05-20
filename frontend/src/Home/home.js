@@ -9,6 +9,7 @@ export default function Home() {
   const [showModal, setShowModal] = useState(false)
   const [workoutDescription, setWorkoutDescription] = useState('')
   const [workouts, setWorkouts] = useState([])
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     loadWorkouts()
@@ -16,10 +17,12 @@ export default function Home() {
 
   const loadWorkouts = async () => {
     try {
+      setError(null)
       const data = await getWorkouts()
       setWorkouts(data)
     } catch (error) {
       console.error('Failed to load workouts:', error)
+      setError('Failed to load workouts. Please check if the server is running and try again.')
     }
   }
 
@@ -35,11 +38,13 @@ export default function Home() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
+      setError(null)
       await createWorkout({ description: workoutDescription })
       await loadWorkouts()
       handleCloseModal()
     } catch (error) {
       console.error('Failed to create workout:', error)
+      setError('Failed to create workout. Please try again.')
     }
   }
 
@@ -57,6 +62,11 @@ export default function Home() {
           Add Plan
         </button>
       </div>
+      {error && (
+        <div className="error-message" style={{ color: 'red', textAlign: 'center', margin: '1rem' }}>
+          {error}
+        </div>
+      )}
       <div className="calendar-container">
         <FullCalendar
           plugins={[dayGridPlugin]}
