@@ -187,8 +187,13 @@
   cursor: pointer;
 }
 
-.submit-button:hover {
+.submit-button:hover:not(:disabled) {
   background-color: #333;
+}
+
+.submit-button:disabled {
+  background-color: #666;
+  cursor: not-allowed;
 }
 
 .cancel-button {
