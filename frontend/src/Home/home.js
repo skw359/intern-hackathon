@@ -64,9 +64,11 @@ export default function Home() {
                   onChange={(e) => setWorkoutDescription(e.target.value)}
                   required
                   className="workout-textarea"
-                  placeholder="Please include all crucial details such as: exercises, sets, reps, duration, intensity level, and any specific equipment needed."
+                  placeholder="describe here"
                 />
-                <small className="description-help">For best results, include all crucial details like exercises, sets, reps, duration, intensity, and required equipment.</small>
+              </div>
+              <div className="disclaimer">
+                Disclaimer: Please include all crucial details about your workout
               </div>
               <div className="button-group">
                 <button type="button" className="cancel-button" onClick={handleCloseModal}>Cancel</button>
