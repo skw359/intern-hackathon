@@ -30,7 +30,7 @@ export default function Home() {
     try {
       setError(null)
       const data = await getWorkouts()
-      setWorkouts([...data, hardcodedEvent])
+      setWorkouts([...data])
     } catch (error) {
       console.error('Failed to load workouts:', error)
       setError('Failed to load workouts. Please check if the server is running and try again.')
