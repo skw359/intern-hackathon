@@ -14,6 +14,7 @@ export default function Home() {
   const [selectedEvent, setSelectedEvent] = useState(null)
   const [selectedDate, setSelectedDate] = useState(null)
   const [workoutDescription, setWorkoutDescription] = useState('')
+  const [dateWorkoutDescription, setDateWorkoutDescription] = useState('')
   const [workouts, setWorkouts] = useState([])
   const [error, setError] = useState(null)
 
@@ -70,6 +71,7 @@ export default function Home() {
   const handleCloseDateModal = () => {
     setShowDateModal(false)
     setSelectedDate(null)
+    setDateWorkoutDescription('')
   }
 
   const handleDateClick = (arg) => {
@@ -87,6 +89,22 @@ export default function Home() {
       })
       await loadWorkouts()
       handleCloseModal()
+    } catch (error) {
+      console.error('Failed to create workout:', error)
+      setError('Failed to create workout. Please try again.')
+    }
+  }
+
+  const handleDateSubmit = async (e) => {
+    e.preventDefault()
+    try {
+      setError(null)
+      await createWorkout({
+        description: dateWorkoutDescription,
+        date: selectedDate
+      })
+      await loadWorkouts()
+      handleCloseDateModal()
     } catch (error) {
       console.error('Failed to create workout:', error)
       setError('Failed to create workout. Please try again.')
@@ -122,7 +140,7 @@ export default function Home() {
           }))}
           eventClick={handleEventClick}
           dateClick={handleDateClick}
-            selectable={true}
+          selectable={true}
         />
       </div>
 
@@ -181,26 +199,28 @@ export default function Home() {
         <div className="modal-overlay">
           <div className="modal">
             <div className="modal-header">
-              <h3 className="modal-title">Selected Date: {selectedDate}</h3>
+              <h3 className="modal-title">Add Workout for {selectedDate}</h3>
               <button className="close-button" onClick={handleCloseDateModal}>&times;</button>
             </div>
-            <div className="modal-content">
-              <p>Would you like to add a workout for this date?</p>
-            </div>
-            <div className="modal-footer">
-              <div className="button-group">
-                <button className="cancel-button" onClick={handleCloseDateModal}>Cancel</button>
-                <button 
-                  className="submit-button" 
-                  onClick={() => {
-                    handleCloseDateModal();
-                    setShowModal(true);
-                  }}
-                >
-                  Add Workout
-                </button>
+            <form className="modal-form" onSubmit={handleDateSubmit}>
+              <div className="form-group">
+                <label htmlFor="dateWorkoutDescription">Describe your workout for this date:</label>
+                <textarea
+                  id="dateWorkoutDescription"
+                  value={dateWorkoutDescription}
+                  onChange={(e) => setDateWorkoutDescription(e.target.value)}
+                  required
+                  className="workout-textarea"
+                  placeholder="Enter workout details"
+                />
               </div>
-            </div>
+              <div className="form-actions">
+                <div className="button-group">
+                  <button type="button" className="cancel-button" onClick={handleCloseDateModal}>Cancel</button>
+                  <button type="submit" className="submit-button">Add Workout</button>
+                </div>
+              </div>
+            </form>
           </div>
         </div>
       )}
