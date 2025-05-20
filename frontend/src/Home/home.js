@@ -67,12 +67,14 @@ export default function Home() {
                   placeholder="describe here"
                 />
               </div>
-              <div className="disclaimer">
-                Disclaimer: Please include all crucial details about your workout
-              </div>
-              <div className="button-group">
-                <button type="button" className="cancel-button" onClick={handleCloseModal}>Cancel</button>
-                <button type="submit" className="submit-button">Submit</button>
+              <div className="form-actions">
+                <div className="disclaimer">
+                  Disclaimer: Please include all crucial details about your workout
+                </div>
+                <div className="button-group">
+                  <button type="button" className="cancel-button" onClick={handleCloseModal}>Cancel</button>
+                  <button type="submit" className="submit-button">Submit</button>
+                </div>
               </div>
             </form>
           </div>
