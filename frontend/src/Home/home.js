@@ -14,6 +14,7 @@ export default function Home() {
   const [showEventModal, setShowEventModal] = useState(false)
   const [showDateModal, setShowDateModal] = useState(false)
   const [selectedEvent, setSelectedEvent] = useState(null)
+  const [selectedWorkout, setSelectedWorkout] = useState(null)
   const [selectedDate, setSelectedDate] = useState(null)
   const [workoutDescription, setWorkoutDescription] = useState('')
   const [dateWorkoutDescription, setDateWorkoutDescription] = useState('')
@@ -53,13 +54,16 @@ export default function Home() {
   }
 
   const handleEventClick = (clickInfo) => {
+    const workout = workouts.find(w => w.date === clickInfo.event.startStr)
     setSelectedEvent(clickInfo.event)
+    setSelectedWorkout(workout)
     setShowEventModal(true)
   }
 
   const handleCloseEventModal = () => {
     setShowEventModal(false)
     setSelectedEvent(null)
+    setSelectedWorkout(null)
   }
 
   const handleCloseDateModal = () => {
@@ -123,7 +127,7 @@ export default function Home() {
   }
 
   const calendarEvents = workouts.map(workout => ({
-    title: workout.description || 'Workout',
+    title: workout.title || 'Workout',
     date: workout.date.split('T')[0],
     _id: workout._id
   }))
@@ -194,7 +198,7 @@ export default function Home() {
         </div>
       )}
 
-      {showEventModal && selectedEvent && (
+      {showEventModal && selectedEvent && selectedWorkout && (
         <div className="modal-overlay">
           <div className="modal">
             <div className="modal-header">
@@ -203,7 +207,18 @@ export default function Home() {
             </div>
             <div className="modal-content">
               <p><strong>Date:</strong> {selectedEvent.startStr}</p>
-              <p><strong>Workout:</strong> {selectedEvent.title}</p>
+              <p><strong>Title:</strong> {selectedWorkout.title}</p>
+              <div className="exercises-list">
+                <h4>Exercises:</h4>
+                {selectedWorkout.exercises.map((exercise, index) => (
+                  <div key={index} className="exercise-details">
+                    <h5>{exercise.name}</h5>
+                    <p><strong>Description:</strong> {exercise.description}</p>
+                    <p><strong>Sets:</strong> {exercise.sets}</p>
+                    <p><strong>Reps:</strong> {exercise.reps}</p>
+                  </div>
+                ))}
+              </div>
             </div>
             <div className="modal-footer">
               <div className="button-group">
