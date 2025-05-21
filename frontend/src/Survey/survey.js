@@ -33,10 +33,7 @@ export default function Survey() {
   };
 
   const handleCancel = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('userId');
-    localStorage.removeItem('name');
-    localStorage.removeItem('hasCompletedSurvey');
+    localStorage.clear();
     navigate('/');
   };
 
@@ -45,7 +42,6 @@ export default function Survey() {
       <form className="survey-form" onSubmit={handleSubmit}>
         <h2 className="survey-title">Tell us about yourself</h2>
         {error && <div className="error-message">{error}</div>}
-        }
         
         <div className="form-group">
           <label htmlFor="weight">Weight (in kg)</label>
