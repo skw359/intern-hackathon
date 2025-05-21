@@ -238,7 +238,7 @@ export default function Home() {
           <p className="greeting-subtitle">Here's your personalized workout schedule</p>
         </div>
         <button className="add-plan-button" onClick={handleAddPlan}>
-          Add Plan
+          Generate Plan
         </button>
       </div>
       {error && (
