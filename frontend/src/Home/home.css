@@ -1,7 +1,7 @@
 .greeting-container {
   max-width: 800px;
-  margin: 2.5rem 1rem 2rem;
-  padding: 1rem;
+  margin: 2.5rem auto 2rem;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -15,6 +15,8 @@
 .greeting-text {
   flex: 1;
   padding: 1rem;
+  width: 100%;
+  text-align: center;
 }
 
 .greeting {
@@ -24,6 +26,7 @@
   margin: 0;
   line-height: 1.2;
   letter-spacing: -0.025em;
+  text-align: center;
 }
 
 .greeting-subtitle {
@@ -31,6 +34,7 @@
   color: #4b5563;
   margin-top: 0.75rem;
   font-weight: 400;
+  text-align: center;
 }
 
 .add-plan-button {
@@ -79,8 +83,8 @@ body {
 
 .calendar-container {
   max-width: 800px;
-  margin: 1rem;
-  padding: 1rem;
+  margin: 2rem auto;
+  padding: 2rem;
   background-color: rgba(255, 255, 255, 0.95);
   border: 1px solid #e5e7eb;
   border-radius: 12px;
@@ -90,6 +94,11 @@ body {
 }
 
 @media (max-width: 768px) {
+  .greeting-container {
+    margin: 2.5rem 1rem 2rem;
+    padding: 1rem;
+  }
+
   .greeting {
     font-size: 1.75rem;
   }
@@ -99,7 +108,8 @@ body {
   }
 
   .calendar-container {
-    padding: 0.5rem;
+    margin: 1rem;
+    padding: 1rem;
   }
 
   .fc .fc-toolbar {
