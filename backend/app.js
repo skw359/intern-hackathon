@@ -6,6 +6,8 @@ const User = require('./models/User');
 const Workout = require('./models/Workout');
 const jwt = require('jsonwebtoken');
 const authMiddleware = require('./middleware/auth');
+const workoutRoutes = require('./routes/workout');
+const { generateWithGemini } = require('./services/gemini');
 require('dotenv').config();
 
 const app = express();
@@ -172,6 +174,69 @@ app.delete('/api/workouts/:id', authMiddleware, async (req, res) => {
   } catch (error) {
     console.error('Error deleting workout:', error);
     res.status(500).json({ message: 'Failed to delete workout' });
+  }
+});
+
+// app.js
+
+// Generate + create endpoint
+app.post('/api/generateWorkout', authMiddleware, async (req, res, next) => {
+  try {
+    const { description, date } = req.body; // date as "YYYY-MM-DD"
+    const dateStr = date || new Date().toISOString().slice(0,10);
+
+    // Build the schema‐prompt
+    const prompt = `
+Generate a single-day workout plan and return it only as valid JSON in exactly this shape:
+
+{
+  "title": "<short name of workout>",
+  "date": "<YYYY-MM-DD>",
+  "exercises": [
+    {
+      "name": "<exercise name>",
+      "description": "<brief description>",
+      "sets": <number>,
+      "reps": <number>
+    }
+  ]
+}
+
+Do not output any extra text or markdown—only the JSON object.
+
+WORKOUT NAME: "${description}"
+DATE: "${dateStr}"
+`;
+
+    // 1) Call Gemini
+    let raw = await generateWithGemini(prompt);
+
+    // 2) Strip code fences
+    raw = raw.trim()
+      .replace(/^```(?:json)?\s*/, '')
+      .replace(/\s*```$/, '');
+
+    // 3) Extract the JSON block
+    const m = raw.match(/\{[\s\S]*\}/);
+    if (!m) throw new Error('No JSON object found in response');
+    const jsonString = m[0];
+
+    // 4) Parse it
+    const planObj = JSON.parse(jsonString);
+
+    // 5) Create a new Workout document
+    const newWorkout = await Workout.create({
+      userId:     req.user.userId,
+      title:      planObj.title,
+      date:       planObj.date,
+      exercises:  planObj.exercises
+    });
+
+    // 6) Return the created workout
+    res.status(201).json(newWorkout);
+  } catch (err) {
+    console.error('Generate+Create error:', err);
+    next(err);
   }
 });
 
