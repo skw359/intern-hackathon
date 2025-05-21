@@ -9,22 +9,14 @@ import './App.css'
 
 function App() {
   const isAuthenticated = localStorage.getItem('token')
-  const hasCompletedSurvey = localStorage.getItem('hasCompletedSurvey')
+  const hasCompletedSurvey = localStorage.getItem('hasCompletedSurvey') === 'true'
 
   return (
     <Router>
       <Routes>
         <Route 
           path="/" 
-          element={isAuthenticated ? (
-            hasCompletedSurvey ? (
-              <Navigate to="/home" replace />
-            ) : (
-              <Navigate to="/survey" replace />
-            )
-          ) : (
-            <Login />
-          )} 
+          element={isAuthenticated ? <Navigate to="/home" replace /> : <Login />} 
         />
         <Route path="/register" element={<Register />} />
         <Route
@@ -39,7 +31,7 @@ function App() {
           path="/home" 
           element={
             <ProtectedRoute>
-              <Home />
+              {!hasCompletedSurvey ? <Navigate to="/survey" replace /> : <Home />}
             </ProtectedRoute>
           } 
         />

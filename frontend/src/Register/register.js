@@ -20,8 +20,12 @@ export default function Register() {
     }
 
     try {
-      await register(name, email, password)
-      navigate('/')
+      const data = await register(name, email, password)
+      localStorage.setItem('token', data.token)
+      localStorage.setItem('userId', data.userId)
+      localStorage.setItem('name', data.name)
+      localStorage.setItem('hasCompletedSurvey', 'false')
+      navigate('/survey')
     } catch (err) {
       setError(err.message || 'Registration failed')
     }
@@ -31,8 +35,7 @@ export default function Register() {
     <div className="register-container">
       <h1 className="register-logo">YouWork</h1>
       <form className="register-form" onSubmit={handleSubmit}>
-        {error && <div className="error-message">{error}</div>
-        }
+        {error && <div className="error-message">{error}</div>}
         <label>Name</label>
         <input
           type="text"
