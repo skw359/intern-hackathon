@@ -21,7 +21,7 @@ export default function Register() {
 
     try {
       await register(name, email, password)
-      navigate('/')
+      navigate('/survey')
     } catch (err) {
       setError(err.message || 'Registration failed')
     }
