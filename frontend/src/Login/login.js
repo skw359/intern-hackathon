@@ -16,7 +16,13 @@ export default function Login() {
       localStorage.setItem('token', data.token)
       localStorage.setItem('userId', data.userId)
       localStorage.setItem('name', data.name)
-      navigate('/home')
+      localStorage.setItem('hasCompletedSurvey', data.hasCompletedSurvey || false)
+      
+      if (data.hasCompletedSurvey) {
+        navigate('/home')
+      } else {
+        navigate('/survey')
+      }
     } catch (err) {
       setError('Invalid email or password')
     }
@@ -26,8 +32,7 @@ export default function Login() {
     <div className="login-container">
       <h1 className="login-logo">YouWork</h1>
       <form className="login-form" onSubmit={handleSubmit}>
-        {error && <div className="error-message">{error}</div>
-        }
+        {error && <div className="error-message">{error}</div>}
         <label>Email</label>
         <input
           type="email"

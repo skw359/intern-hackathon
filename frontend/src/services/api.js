@@ -52,6 +52,15 @@ export const register = async (name, email, password) => {
   }
 };
 
+export const updateUserProfile = async (profileData) => {
+  try {
+    const response = await api.post('/auth/profile', profileData);
+    return response.data;
+  } catch (error) {
+    throw new Error(`Failed to update profile: ${error.response?.data?.message || error.message}`);
+  }
+};
+
 export const getWorkouts = async () => {
   try {
     const token = localStorage.getItem('token');
