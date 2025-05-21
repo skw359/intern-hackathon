@@ -185,6 +185,7 @@ export default function Home() {
 
   const handleProfileSubmit = async (e) => {
     e.preventDefault();
+    console.log("this is the profile data being submitted:", profileData);
     try {
       setError(null);
       await updateUserProfile(profileData);
@@ -193,7 +194,7 @@ export default function Home() {
       });
       setShowProfileModal(false);
     } catch (error) {
-      setError('Failed to update profile. Please try again.');
+      setError('did not update profile. Please try again.');
     }
   };
 

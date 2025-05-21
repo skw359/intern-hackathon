@@ -13,7 +13,7 @@ export default function ProfileModal({ show, onClose, profileData, setProfileDat
         </div>
         <form className="modal-form" onSubmit={onSubmit}>
           {error && <div className="error-message">{error}</div>}
-          }
+          
           <div className="form-group">
             <label htmlFor="weight">Weight (in kg)</label>
             <input
