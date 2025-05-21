@@ -56,7 +56,8 @@ export default function Home() {
   };
 
   const handleEventClick = (clickInfo) => {
-    const workout = workouts.find(w => w.date === clickInfo.event.startStr);
+    const workout = workouts.find(w => w._id === clickInfo.event.extendedProps._id);
+
     setSelectedEvent(clickInfo.event);
     setSelectedWorkout(workout);
     setShowEventModal(true);

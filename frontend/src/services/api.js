@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://b5lmq7hc-3001.use.devtunnels.ms/api',
+  baseURL: '/api',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json'
@@ -70,6 +70,8 @@ export const getWorkouts = async () => {
       }
     });
     return response.data.map(workout => ({
+      _id: workout._id,
+      userId: workout.userId,
       title: workout.title || 'Workout',
       date: workout.date,
       exercises: workout.exercises || []
