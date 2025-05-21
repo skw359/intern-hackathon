@@ -1,11 +1,11 @@
 .greeting-container {
   max-width: 800px;
   margin: 2.5rem auto 2rem;
-  padding: 1.5rem;
+  padding: 1.5rem 2rem;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  justify-content: space-between;
   align-items: center;
-  text-align: center;
   background-color: rgba(255, 255, 255, 0.95);
   border-radius: 12px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
@@ -15,8 +15,7 @@
 .greeting-text {
   flex: 1;
   padding: 1rem;
-  width: 100%;
-  text-align: center;
+  text-align: left;
 }
 
 .greeting {
@@ -26,7 +25,7 @@
   margin: 0;
   line-height: 1.2;
   letter-spacing: -0.025em;
-  text-align: center;
+  text-align: left;
 }
 
 .greeting-subtitle {
@@ -34,7 +33,7 @@
   color: #4b5563;
   margin-top: 0.75rem;
   font-weight: 400;
-  text-align: center;
+  text-align: left;
 }
 
 .add-plan-button {
@@ -48,9 +47,7 @@
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-top: 1rem;
-  width: 100%;
-  max-width: 300px;
+  white-space: nowrap;
 }
 
 .add-plan-button:hover {
@@ -97,14 +94,29 @@ body {
   .greeting-container {
     margin: 2.5rem 1rem 2rem;
     padding: 1rem;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .greeting-text {
+    text-align: center;
+    padding: 0;
+    margin-bottom: 1rem;
   }
 
   .greeting {
     font-size: 1.75rem;
+    text-align: center;
   }
 
   .greeting-subtitle {
     font-size: 1rem;
+    text-align: center;
+  }
+
+  .add-plan-button {
+    width: 100%;
+    padding: 0.75rem 1.5rem;
   }
 
   .calendar-container {
