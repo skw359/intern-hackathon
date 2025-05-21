@@ -15,13 +15,12 @@ export default function Home() {
   const [showDateModal, setShowDateModal] = useState(false)
   const [selectedEvent, setSelectedEvent] = useState(null)
   const [selectedDate, setSelectedDate] = useState(null)
-  const [workoutDescription, setWorkoutDescription] = useState('')
-  const [dateWorkoutDescription, setDateWorkoutDescription] = useState('')
+  const [workoutTitle, setWorkoutTitle] = useState('')
+  const [exercises, setExercises] = useState([{ name: '', description: '', sets: 1, reps: 1 }])
   const [workouts, setWorkouts] = useState([])
   const [error, setError] = useState(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
-  const [editWorkoutDescription, setEditWorkoutDescription] = useState('')
 
   useEffect(() => {
     loadWorkouts()
@@ -51,13 +50,18 @@ export default function Home() {
 
   const handleCloseModal = () => {
     setShowModal(false)
-    setWorkoutDescription('')
+    setWorkoutTitle('')
+    setExercises([{ name: '', description: '', sets: 1, reps: 1 }])
     setSelectedDate(null)
   }
 
   const handleEventClick = (clickInfo) => {
     setSelectedEvent(clickInfo.event)
-    setEditWorkoutDescription(clickInfo.event.title)
+    const workout = workouts.find(w => w._id === clickInfo.event.extendedProps._id)
+    if (workout) {
+      setWorkoutTitle(workout.title)
+      setExercises(workout.exercises || [])
+    }
     setShowEventModal(true)
   }
 
@@ -65,18 +69,34 @@ export default function Home() {
     setShowEventModal(false)
     setSelectedEvent(null)
     setIsEditing(false)
-    setEditWorkoutDescription('')
+    setWorkoutTitle('')
+    setExercises([{ name: '', description: '', sets: 1, reps: 1 }])
   }
 
   const handleCloseDateModal = () => {
     setShowDateModal(false)
     setSelectedDate(null)
-    setDateWorkoutDescription('')
+    setWorkoutTitle('')
+    setExercises([{ name: '', description: '', sets: 1, reps: 1 }])
   }
 
   const handleDateClick = (arg) => {
     setSelectedDate(arg.dateStr)
     setShowDateModal(true)
+  }
+
+  const handleAddExercise = () => {
+    setExercises([...exercises, { name: '', description: '', sets: 1, reps: 1 }])
+  }
+
+  const handleRemoveExercise = (index) => {
+    setExercises(exercises.filter((_, i) => i !== index))
+  }
+
+  const handleExerciseChange = (index, field, value) => {
+    const newExercises = [...exercises]
+    newExercises[index] = { ...newExercises[index], [field]: value }
+    setExercises(newExercises)
   }
 
   const handleSubmit = async (e) => {
@@ -87,8 +107,9 @@ export default function Home() {
       setIsSubmitting(true)
       setError(null)
       await createWorkout({ 
-        description: workoutDescription,
-        date: selectedDate || new Date().toISOString()
+        title: workoutTitle,
+        date: selectedDate || new Date().toISOString(),
+        exercises: exercises
       })
       await loadWorkouts()
       handleCloseModal()
@@ -108,8 +129,9 @@ export default function Home() {
       setIsSubmitting(true)
       setError(null)
       await createWorkout({
-        description: dateWorkoutDescription,
-        date: selectedDate
+        title: workoutTitle,
+        date: selectedDate,
+        exercises: exercises
       })
       await loadWorkouts()
       handleCloseDateModal()
@@ -150,8 +172,9 @@ export default function Home() {
       setIsSubmitting(true)
       setError(null)
       await updateWorkout(selectedEvent.extendedProps._id, {
-        description: editWorkoutDescription,
-        date: selectedEvent.startStr
+        title: workoutTitle,
+        date: selectedEvent.startStr,
+        exercises: exercises
       })
       await loadWorkouts()
       handleCloseEventModal()
@@ -163,13 +186,80 @@ export default function Home() {
     }
   }
 
-  const calendarEvents = [
-    ...workouts.map(workout => ({
-      title: workout.description || workout.title,
-      date: workout.date.split('T')[0],
-      _id: workout._id
-    }))
-  ]
+  const calendarEvents = workouts.map(workout => ({
+    title: workout.title,
+    date: workout.date.split('T')[0],
+    _id: workout._id
+  }))
+
+  const renderExerciseFields = (isEditMode = false) => (
+    <div className="exercises-container">
+      {exercises.map((exercise, index) => (
+        <div key={index} className="exercise-item">
+          <div className="exercise-header">
+            <h4>Exercise {index + 1}</h4>
+            {exercises.length > 1 && (
+              <button 
+                type="button" 
+                className="remove-exercise-button"
+                onClick={() => handleRemoveExercise(index)}
+              >
+                Remove
+              </button>
+            )}
+          </div>
+          <div className="exercise-fields">
+            <div className="form-group">
+              <label>Name:</label>
+              <input
+                type="text"
+                value={exercise.name}
+                onChange={(e) => handleExerciseChange(index, 'name', e.target.value)}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>Description:</label>
+              <textarea
+                value={exercise.description}
+                onChange={(e) => handleExerciseChange(index, 'description', e.target.value)}
+                required
+              />
+            </div>
+            <div className="exercise-numbers">
+              <div className="form-group">
+                <label>Sets:</label>
+                <input
+                  type="number"
+                  min="1"
+                  value={exercise.sets}
+                  onChange={(e) => handleExerciseChange(index, 'sets', parseInt(e.target.value))}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>Reps:</label>
+                <input
+                  type="number"
+                  min="1"
+                  value={exercise.reps}
+                  onChange={(e) => handleExerciseChange(index, 'reps', parseInt(e.target.value))}
+                  required
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
+      <button 
+        type="button" 
+        className="add-exercise-button"
+        onClick={handleAddExercise}
+      >
+        Add Exercise
+      </button>
+    </div>
+  )
 
   return (
     <>
@@ -213,19 +303,21 @@ export default function Home() {
             </div>
             <form className="modal-form" onSubmit={handleSubmit}>
               <div className="form-group">
-                <label htmlFor="workoutDescription">Describe your desired workout!</label>
-                <textarea
-                  id="workoutDescription"
-                  value={workoutDescription}
-                  onChange={(e) => setWorkoutDescription(e.target.value)}
+                <label htmlFor="workoutTitle">Workout Title:</label>
+                <input
+                  id="workoutTitle"
+                  type="text"
+                  value={workoutTitle}
+                  onChange={(e) => setWorkoutTitle(e.target.value)}
                   required
-                  className="workout-textarea"
-                  placeholder="describe here"
+                  className="workout-input"
+                  placeholder="Enter workout title"
                 />
               </div>
+              {renderExerciseFields()}
               <div className="form-actions">
                 <div className="disclaimer">
-                  Disclaimer: Please include all crucial details about your workout
+                  Please include all crucial details about your workout
                 </div>
                 <div className="button-group">
                   <button type="button" className="cancel-button" onClick={handleCloseModal}>Cancel</button>
@@ -253,15 +345,17 @@ export default function Home() {
             {isEditing ? (
               <form className="modal-form" onSubmit={handleEditSubmit}>
                 <div className="form-group">
-                  <label htmlFor="editWorkoutDescription">Edit workout description:</label>
-                  <textarea
-                    id="editWorkoutDescription"
-                    value={editWorkoutDescription}
-                    onChange={(e) => setEditWorkoutDescription(e.target.value)}
+                  <label htmlFor="workoutTitle">Workout Title:</label>
+                  <input
+                    id="workoutTitle"
+                    type="text"
+                    value={workoutTitle}
+                    onChange={(e) => setWorkoutTitle(e.target.value)}
                     required
-                    className="workout-textarea"
+                    className="workout-input"
                   />
                 </div>
+                {renderExerciseFields(true)}
                 <div className="modal-footer">
                   <div className="button-group">
                     <button type="button" className="cancel-button" onClick={() => setIsEditing(false)}>Cancel</button>
@@ -280,6 +374,18 @@ export default function Home() {
                 <div className="modal-content">
                   <p><strong>Date:</strong> {selectedEvent.startStr}</p>
                   <p><strong>Workout:</strong> {selectedEvent.title}</p>
+                  {selectedEvent.extendedProps._id && workouts.find(w => w._id === selectedEvent.extendedProps._id)?.exercises && (
+                    <div className="exercises-list">
+                      <h4>Exercises:</h4>
+                      {workouts.find(w => w._id === selectedEvent.extendedProps._id).exercises.map((exercise, index) => (
+                        <div key={index} className="exercise-details">
+                          <h5>{exercise.name}</h5>
+                          <p>{exercise.description}</p>
+                          <p>Sets: {exercise.sets} | Reps: {exercise.reps}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 <div className="modal-footer">
                   <div className="button-group">
@@ -307,16 +413,18 @@ export default function Home() {
             </div>
             <form className="modal-form" onSubmit={handleDateSubmit}>
               <div className="form-group">
-                <label htmlFor="dateWorkoutDescription">Describe your workout for this date:</label>
-                <textarea
-                  id="dateWorkoutDescription"
-                  value={dateWorkoutDescription}
-                  onChange={(e) => setDateWorkoutDescription(e.target.value)}
+                <label htmlFor="workoutTitle">Workout Title:</label>
+                <input
+                  id="workoutTitle"
+                  type="text"
+                  value={workoutTitle}
+                  onChange={(e) => setWorkoutTitle(e.target.value)}
                   required
-                  className="workout-textarea"
-                  placeholder="Enter workout details"
+                  className="workout-input"
+                  placeholder="Enter workout title"
                 />
               </div>
+              {renderExerciseFields()}
               <div className="form-actions">
                 <div className="button-group">
                   <button type="button" className="cancel-button" onClick={handleCloseDateModal}>Cancel</button>
