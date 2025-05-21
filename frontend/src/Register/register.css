@@ -7,7 +7,11 @@
   justify-content: center;
   min-height: 100vh;
   padding: 2rem;
-  background-color: #f9fafb;
+  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+    url('https://images.pexels.com/photos/841130/pexels-photo-841130.jpeg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
 }
 
 .register-logo {
@@ -15,20 +19,20 @@
   font-size: 4rem;
   font-weight: 700;
   margin-bottom: 2.5rem;
-  background: linear-gradient(135deg, #000000, #333333);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
   letter-spacing: 1px;
 }
 
 .register-form {
-  background-color: white;
-  border: 1px solid #e5e7eb;
+  background-color: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(229, 231, 235, 0.5);
   border-radius: 16px;
   padding: 2.5rem;
   width: 100%;
   max-width: 400px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(8px);
 }
 
 .register-form label {
@@ -48,6 +52,7 @@
   font-size: 1rem;
   transition: all 0.2s ease;
   box-sizing: border-box;
+  background-color: rgba(255, 255, 255, 0.9);
 }
 
 .register-form input:focus {
@@ -94,7 +99,7 @@
 
 .error-message {
   color: #dc2626;
-  background-color: #fef2f2;
+  background-color: rgba(254, 242, 242, 0.9);
   border: 1px solid #fee2e2;
   border-radius: 8px;
   padding: 1rem;
