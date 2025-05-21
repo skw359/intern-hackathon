@@ -1,10 +1,11 @@
 .greeting-container {
   max-width: 800px;
-  margin: 2.5rem auto 2rem;
-  padding: 0 2rem;
+  margin: 2.5rem 1rem 2rem;
+  padding: 1rem;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
+  text-align: center;
   background-color: rgba(255, 255, 255, 0.95);
   border-radius: 12px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
@@ -13,11 +14,11 @@
 
 .greeting-text {
   flex: 1;
-  padding: 1.5rem;
+  padding: 1rem;
 }
 
 .greeting {
-  font-size: 2.5rem;
+  font-size: 2rem;
   color: #111827;
   font-weight: 700;
   margin: 0;
@@ -26,7 +27,7 @@
 }
 
 .greeting-subtitle {
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   color: #4b5563;
   margin-top: 0.75rem;
   font-weight: 400;
@@ -43,7 +44,9 @@
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-right: 1.5rem;
+  margin-top: 1rem;
+  width: 100%;
+  max-width: 300px;
 }
 
 .add-plan-button:hover {
@@ -76,11 +79,40 @@ body {
 
 .calendar-container {
   max-width: 800px;
-  margin: 2rem auto;
-  padding: 2rem;
+  margin: 1rem;
+  padding: 1rem;
   background-color: rgba(255, 255, 255, 0.95);
   border: 1px solid #e5e7eb;
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   backdrop-filter: blur(4px);
+  overflow-x: auto;
+}
+
+@media (max-width: 768px) {
+  .greeting {
+    font-size: 1.75rem;
+  }
+
+  .greeting-subtitle {
+    font-size: 1rem;
+  }
+
+  .calendar-container {
+    padding: 0.5rem;
+  }
+
+  .fc .fc-toolbar {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .fc .fc-toolbar-title {
+    font-size: 1.25rem !important;
+  }
+
+  .fc .fc-button {
+    padding: 0.5rem 1rem !important;
+    font-size: 0.875rem !important;
+  }
 }
