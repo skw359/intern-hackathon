@@ -107,12 +107,19 @@ app.get('/api/workouts', authMiddleware, async (req, res) => {
 // Create a new workout
 app.post('/api/makeWorkout', authMiddleware, async (req, res) => {
   try {
-    const { description, date } = req.body;
+    const { title, date, exercises } = req.body;
+
+    if (!title || !date || !Array.isArray(exercises) || exercises.length === 0) {
+      return res.status(400).json({ message: 'Title, date, and at least one exercise are required.' });
+    }
+
     const newWorkout = new Workout({
       userId: req.user.userId,
-      description,
-      date
+      title,
+      date,
+      exercises
     });
+
     await newWorkout.save();
     res.status(201).json(newWorkout);
   } catch (error) {
@@ -125,11 +132,15 @@ app.post('/api/makeWorkout', authMiddleware, async (req, res) => {
 app.put('/api/workouts/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
-    const { description, date } = req.body;
+    const { title, date, exercises } = req.body;
+
+    if (!title || !date || !Array.isArray(exercises) || exercises.length === 0) {
+      return res.status(400).json({ message: 'Title, date, and at least one exercise are required.' });
+    }
 
     const updatedWorkout = await Workout.findOneAndUpdate(
       { _id: id, userId: req.user.userId },
-      { description, date },
+      { title, date, exercises },
       { new: true }
     );
 

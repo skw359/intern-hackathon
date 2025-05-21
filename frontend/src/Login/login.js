@@ -16,6 +16,7 @@ export default function Login() {
       localStorage.setItem('token', data.token)
       localStorage.setItem('userId', data.userId)
       localStorage.setItem('name', data.name)
+      localStorage.setItem('hasCompletedSurvey', data.hasCompletedSurvey)
       navigate('/home')
     } catch (err) {
       setError('Invalid email or password')

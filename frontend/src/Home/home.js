@@ -1,184 +1,214 @@
-import React, { useState, useEffect } from 'react'
-import FullCalendar from '@fullcalendar/react'
-import dayGridPlugin from '@fullcalendar/daygrid'
-import interactionPlugin from '@fullcalendar/interaction'
-import { useNavigate } from 'react-router-dom'
-
-import { getWorkouts, createWorkout, deleteWorkout, updateWorkout } from '../services/api'
-import "./home.css"
+import React, { useState, useEffect } from 'react';
+import { getWorkouts, createWorkout, deleteWorkout, updateWorkout, updateUserProfile } from '../services/api';
+import Header from '../components/Header/Header';
+import WorkoutCalendar from '../components/WorkoutCalendar/WorkoutCalendar';
+import ProfileModal from '../components/Modals/ProfileModal';
+import WorkoutModal from '../components/Modals/WorkoutModal';
+import EventModal from '../components/Modals/EventModal';
+import DateModal from '../components/Modals/DateModal';
+import "./home.css";
 
 export default function Home() {
-  const navigate = useNavigate()
-  const [name] = useState(localStorage.getItem('name') || 'User')
-  const [showModal, setShowModal] = useState(false)
-  const [showEventModal, setShowEventModal] = useState(false)
-  const [showDateModal, setShowDateModal] = useState(false)
-  const [selectedEvent, setSelectedEvent] = useState(null)
-  const [selectedDate, setSelectedDate] = useState(null)
-  const [workoutDescription, setWorkoutDescription] = useState('')
-  const [dateWorkoutDescription, setDateWorkoutDescription] = useState('')
-  const [workouts, setWorkouts] = useState([])
-  const [error, setError] = useState(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isEditing, setIsEditing] = useState(false)
-  const [editWorkoutDescription, setEditWorkoutDescription] = useState('')
+  const [name, setName] = useState(localStorage.getItem('name') || 'User');
+  const [showModal, setShowModal] = useState(false);
+  const [showEventModal, setShowEventModal] = useState(false);
+  const [showDateModal, setShowDateModal] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [selectedWorkout, setSelectedWorkout] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [workoutDescription, setWorkoutDescription] = useState('');
+  const [workoutTitle, setWorkoutTitle] = useState('');
+  const [exercises, setExercises] = useState([]);
+  const [workouts, setWorkouts] = useState([]);
+  const [error, setError] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [profileData, setProfileData] = useState({
+    weight: localStorage.getItem('weight') || '',
+    age: localStorage.getItem('age') || '',
+    gender: localStorage.getItem('gender') || '',
+    experience: localStorage.getItem('experience') || ''
+  });
 
   useEffect(() => {
-    loadWorkouts()
-  }, [])
+    loadWorkouts();
+  }, []);
 
   const loadWorkouts = async () => {
     try {
-      setError(null)
-      const data = await getWorkouts()
-      setWorkouts(data)
+      setError(null);
+      const data = await getWorkouts();
+      setWorkouts(data);
     } catch (error) {
-      console.error('Failed to load workouts:', error)
-      setError('Failed to load workouts. Please check if the server is running and try again.')
+      console.error('Failed to load workouts:', error);
+      setError('Failed to load workouts. Please check if the server is running and try again.');
     }
-  }
-
-  const handleLogout = () => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('userId')
-    localStorage.removeItem('name')
-    navigate('/')
-  }
+  };
 
   const handleAddPlan = () => {
-    setShowModal(true)
-  }
+    setShowModal(true);
+  };
 
   const handleCloseModal = () => {
-    setShowModal(false)
-    setWorkoutDescription('')
-    setSelectedDate(null)
-  }
+    setShowModal(false);
+    setWorkoutDescription('');
+    setSelectedDate(null);
+  };
 
   const handleEventClick = (clickInfo) => {
-    setSelectedEvent(clickInfo.event)
-    setEditWorkoutDescription(clickInfo.event.title)
-    setShowEventModal(true)
-  }
+    const workout = workouts.find(w => w._id === clickInfo.event.extendedProps._id);
+
+    setSelectedEvent(clickInfo.event);
+    setSelectedWorkout(workout);
+    setShowEventModal(true);
+  };
 
   const handleCloseEventModal = () => {
-    setShowEventModal(false)
-    setSelectedEvent(null)
-    setIsEditing(false)
-    setEditWorkoutDescription('')
-  }
+    setShowEventModal(false);
+    setSelectedEvent(null);
+    setSelectedWorkout(null);
+    setIsEditing(false);
+  };
 
   const handleCloseDateModal = () => {
-    setShowDateModal(false)
-    setSelectedDate(null)
-    setDateWorkoutDescription('')
-  }
+    setShowDateModal(false);
+    setSelectedDate(null);
+    setWorkoutTitle('');
+    setExercises([]);
+    setIsEditing(false);
+  };
 
   const handleDateClick = (arg) => {
-    setSelectedDate(arg.dateStr)
-    setShowDateModal(true)
-  }
+    setSelectedDate(arg.dateStr);
+    setShowDateModal(true);
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    if (isSubmitting) return
-    
+    e.preventDefault();
     try {
-      setIsSubmitting(true)
-      setError(null)
-      await createWorkout({ 
-        description: workoutDescription,
-        date: selectedDate || new Date().toISOString()
-      })
-      await loadWorkouts()
-      handleCloseModal()
+      setError(null);
+      const workout = {
+        title: 'Quick Workout',
+        date: selectedDate || new Date().toISOString().split('T')[0],
+        exercises: [{
+          name: 'Exercise',
+          description: workoutDescription,
+          sets: 1,
+          reps: 1
+        }]
+      };
+      await createWorkout(workout);
+      await loadWorkouts();
+      handleCloseModal();
     } catch (error) {
-      console.error('Failed to create workout:', error)
-      setError('Failed to create workout. Please try again.')
-    } finally {
-      setIsSubmitting(false)
+      console.error('Failed to create workout:', error);
+      setError('Failed to create workout. Please try again.');
     }
-  }
+  };
 
   const handleDateSubmit = async (e) => {
-    e.preventDefault()
-    if (isSubmitting) return
-    
-    try {
-      setIsSubmitting(true)
-      setError(null)
-      await createWorkout({
-        description: dateWorkoutDescription,
-        date: selectedDate
-      })
-      await loadWorkouts()
-      handleCloseDateModal()
-    } catch (error) {
-      console.error('Failed to create workout:', error)
-      setError('Failed to create workout. Please try again.')
-    } finally {
-      setIsSubmitting(false)
+    e.preventDefault();
+    if (exercises.length === 0) {
+      setError('Please add at least one exercise');
+      return;
     }
-  }
+
+    try {
+      setError(null);
+      const workoutData = {
+        title: workoutTitle,
+        date: selectedDate,
+        exercises: exercises
+      };
+
+      if (isEditing && selectedWorkout?._id) {
+        await updateWorkout(selectedWorkout._id, workoutData);
+      } else {
+        await createWorkout(workoutData);
+      }
+      
+      await loadWorkouts();
+      handleCloseDateModal();
+    } catch (error) {
+      console.error('Failed to save workout:', error);
+      setError('Failed to save workout. Please try again.');
+    }
+  };
 
   const handleDeleteWorkout = async () => {
     if (!selectedEvent || !selectedEvent.extendedProps._id) {
-      setError('Cannot delete this event')
-      return
+      setError('Cannot delete this event');
+      return;
     }
 
     try {
-      setError(null)
-      await deleteWorkout(selectedEvent.extendedProps._id)
-      await loadWorkouts()
-      handleCloseEventModal()
+      setError(null);
+      await deleteWorkout(selectedEvent.extendedProps._id);
+      await loadWorkouts();
+      handleCloseEventModal();
     } catch (error) {
-      console.error('Failed to delete workout:', error)
-      setError('Failed to delete workout. Please try again.')
+      console.error('Failed to delete workout:', error);
+      setError('Failed to delete workout. Please try again.');
     }
-  }
+  };
 
-  const handleEditClick = () => {
-    setIsEditing(true)
-  }
+  const handleEditWorkout = (workout) => {
+    setWorkoutTitle(workout.title);
+    setExercises(workout.exercises);
+    setSelectedDate(workout.date);
+    setIsEditing(true);
+    setShowEventModal(false);
+    setShowDateModal(true);
+  };
 
-  const handleEditSubmit = async (e) => {
-    e.preventDefault()
-    if (isSubmitting) return
+  const handleAddExercise = () => {
+    setExercises([...exercises, {
+      name: '',
+      description: '',
+      sets: 1,
+      reps: 1
+    }]);
+  };
 
+  const handleRemoveExercise = (index) => {
+    setExercises(exercises.filter((_, i) => i !== index));
+  };
+
+  const handleExerciseChange = (index, field, value) => {
+    const newExercises = [...exercises];
+    newExercises[index] = {
+      ...newExercises[index],
+      [field]: field === 'sets' || field === 'reps' ? parseInt(value) || 0 : value
+    };
+    setExercises(newExercises);
+  };
+
+  const handleProfileSubmit = async (e) => {
+    e.preventDefault();
     try {
-      setIsSubmitting(true)
-      setError(null)
-      await updateWorkout(selectedEvent.extendedProps._id, {
-        description: editWorkoutDescription,
-        date: selectedEvent.startStr
-      })
-      await loadWorkouts()
-      handleCloseEventModal()
+      setError(null);
+      await updateUserProfile(profileData);
+      Object.entries(profileData).forEach(([key, value]) => {
+        localStorage.setItem(key, value);
+      });
+      setShowProfileModal(false);
     } catch (error) {
-      console.error('Failed to update workout:', error)
-      setError('Failed to update workout. Please try again.')
-    } finally {
-      setIsSubmitting(false)
+      setError('Failed to update profile. Please try again.');
     }
-  }
+  };
 
-  const calendarEvents = [
-    ...workouts.map(workout => ({
-      title: workout.description || workout.title,
-      date: workout.date.split('T')[0],
-      _id: workout._id
-    }))
-  ]
+  const calendarEvents = workouts.map(workout => ({
+    title: workout.title || 'Workout',
+    date: workout.date.split('T')[0],
+    extendedProps: {
+      _id: workout._id,
+      exercises: workout.exercises
+    }
+  }));
 
   return (
     <>
-      <header className="header">
-        <h1 className="header-logo">YouWork</h1>
-        <button className="logout-button" onClick={handleLogout}>
-          Logout
-        </button>
-      </header>
+      <Header onProfileClick={() => setShowProfileModal(true)} />
       <div className="greeting-container">
         <div className="greeting-text">
           <h2 className="greeting">Welcome back, {name}!</h2>
@@ -189,150 +219,56 @@ export default function Home() {
         </button>
       </div>
       {error && (
-        <div className="error-message" style={{ color: 'red', textAlign: 'center', margin: '1rem' }}>
+        <div className="error-message">
           {error}
         </div>
       )}
-      <div className="calendar-container">
-        <FullCalendar
-          plugins={[dayGridPlugin, interactionPlugin]}
-          initialView="dayGridMonth"
-          events={calendarEvents}
-          eventClick={handleEventClick}
-          dateClick={handleDateClick}
-          selectable={true}
-        />
-      </div>
+      <WorkoutCalendar
+        events={calendarEvents}
+        onEventClick={handleEventClick}
+        onDateClick={handleDateClick}
+      />
 
-      {showModal && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <div className="modal-header">
-              <h3 className="modal-title">Add New Workout</h3>
-              <button className="close-button" onClick={handleCloseModal}>&times;</button>
-            </div>
-            <form className="modal-form" onSubmit={handleSubmit}>
-              <div className="form-group">
-                <label htmlFor="workoutDescription">Describe your desired workout!</label>
-                <textarea
-                  id="workoutDescription"
-                  value={workoutDescription}
-                  onChange={(e) => setWorkoutDescription(e.target.value)}
-                  required
-                  className="workout-textarea"
-                  placeholder="describe here"
-                />
-              </div>
-              <div className="form-actions">
-                <div className="disclaimer">
-                  Disclaimer: Please include all crucial details about your workout
-                </div>
-                <div className="button-group">
-                  <button type="button" className="cancel-button" onClick={handleCloseModal}>Cancel</button>
-                  <button 
-                    type="submit" 
-                    className="submit-button"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? 'Submitting...' : 'Submit'}
-                  </button>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      <WorkoutModal
+        show={showModal}
+        onClose={handleCloseModal}
+        workoutDescription={workoutDescription}
+        setWorkoutDescription={setWorkoutDescription}
+        onSubmit={handleSubmit}
+        error={error}
+      />
 
-      {showEventModal && selectedEvent && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <div className="modal-header">
-              <h3 className="modal-title">Workout Details</h3>
-              <button className="close-button" onClick={handleCloseEventModal}>&times;</button>
-            </div>
-            {isEditing ? (
-              <form className="modal-form" onSubmit={handleEditSubmit}>
-                <div className="form-group">
-                  <label htmlFor="editWorkoutDescription">Edit workout description:</label>
-                  <textarea
-                    id="editWorkoutDescription"
-                    value={editWorkoutDescription}
-                    onChange={(e) => setEditWorkoutDescription(e.target.value)}
-                    required
-                    className="workout-textarea"
-                  />
-                </div>
-                <div className="modal-footer">
-                  <div className="button-group">
-                    <button type="button" className="cancel-button" onClick={() => setIsEditing(false)}>Cancel</button>
-                    <button 
-                      type="submit" 
-                      className="submit-button"
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? 'Saving...' : 'Save Changes'}
-                    </button>
-                  </div>
-                </div>
-              </form>
-            ) : (
-              <>
-                <div className="modal-content">
-                  <p><strong>Date:</strong> {selectedEvent.startStr}</p>
-                  <p><strong>Workout:</strong> {selectedEvent.title}</p>
-                </div>
-                <div className="modal-footer">
-                  <div className="button-group">
-                    <button className="cancel-button" onClick={handleCloseEventModal}>Close</button>
-                    {selectedEvent.extendedProps._id && (
-                      <>
-                        <button className="edit-button" onClick={handleEditClick}>Edit</button>
-                        <button className="delete-button" onClick={handleDeleteWorkout}>Delete</button>
-                      </>
-                    )}
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      )}
+      <EventModal
+        show={showEventModal}
+        onClose={handleCloseEventModal}
+        event={selectedEvent}
+        workout={selectedWorkout}
+        onDelete={handleDeleteWorkout}
+        onEdit={handleEditWorkout}
+      />
 
-      {showDateModal && selectedDate && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <div className="modal-header">
-              <h3 className="modal-title">Add Workout for {selectedDate}</h3>
-              <button className="close-button" onClick={handleCloseDateModal}>&times;</button>
-            </div>
-            <form className="modal-form" onSubmit={handleDateSubmit}>
-              <div className="form-group">
-                <label htmlFor="dateWorkoutDescription">Describe your workout for this date:</label>
-                <textarea
-                  id="dateWorkoutDescription"
-                  value={dateWorkoutDescription}
-                  onChange={(e) => setDateWorkoutDescription(e.target.value)}
-                  required
-                  className="workout-textarea"
-                  placeholder="Enter workout details"
-                />
-              </div>
-              <div className="form-actions">
-                <div className="button-group">
-                  <button type="button" className="cancel-button" onClick={handleCloseDateModal}>Cancel</button>
-                  <button 
-                    type="submit" 
-                    className="submit-button"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? 'Submitting...' : 'Add Workout'}
-                  </button>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      <DateModal
+        show={showDateModal}
+        onClose={handleCloseDateModal}
+        date={selectedDate}
+        workoutTitle={workoutTitle}
+        setWorkoutTitle={setWorkoutTitle}
+        exercises={exercises}
+        onExerciseAdd={handleAddExercise}
+        onExerciseRemove={handleRemoveExercise}
+        onExerciseChange={handleExerciseChange}
+        onSubmit={handleDateSubmit}
+        error={error}
+      />
+
+      <ProfileModal
+        show={showProfileModal}
+        onClose={() => setShowProfileModal(false)}
+        profileData={profileData}
+        setProfileData={setProfileData}
+        onSubmit={handleProfileSubmit}
+        error={error}
+      />
     </>
-  )
+  );
 }

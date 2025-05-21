@@ -52,6 +52,15 @@ export const register = async (name, email, password) => {
   }
 };
 
+export const updateUserProfile = async (profileData) => {
+  try {
+    const response = await api.post('/auth/profile', profileData);
+    return response.data;
+  } catch (error) {
+    throw new Error(`Failed to update profile: ${error.response?.data?.message || error.message}`);
+  }
+};
+
 export const getWorkouts = async () => {
   try {
     const token = localStorage.getItem('token');
@@ -60,7 +69,13 @@ export const getWorkouts = async () => {
         authorization: `Bearer ${token}`
       }
     });
-    return response.data;
+    return response.data.map(workout => ({
+      _id: workout._id,
+      userId: workout.userId,
+      title: workout.title || 'Workout',
+      date: workout.date,
+      exercises: workout.exercises || []
+    }));
   } catch (error) {
     throw new Error(`Failed to fetch workouts: ${error.response?.data?.message || error.message}`);
   }

@@ -1,13 +1,15 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import Login from './Login/login'
 import Register from './Register/register'
-import Home from './Home/home';
-import ProtectedRoute from './components/ProtectedRoute';
+import Survey from './Survey/survey'
+import Home from './Home/home'
+import ProtectedRoute from './components/ProtectedRoute'
 
-import './App.css';
+import './App.css'
 
 function App() {
-  const isAuthenticated = localStorage.getItem('token');
+  const isAuthenticated = localStorage.getItem('token')
+  const hasCompletedSurvey = localStorage.getItem('hasCompletedSurvey') === 'true'
 
   return (
     <Router>
@@ -17,6 +19,14 @@ function App() {
           element={isAuthenticated ? <Navigate to="/home" replace /> : <Login />} 
         />
         <Route path="/register" element={<Register />} />
+        <Route
+          path="/survey"
+          element={
+            <ProtectedRoute>
+              <Survey />
+            </ProtectedRoute>
+          }
+        />
         <Route 
           path="/home" 
           element={
@@ -25,10 +35,10 @@ function App() {
             </ProtectedRoute>
           } 
         />
-        <Route path="*" element={<Navigate to="/home" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
-  );
+  )
 }
 
-export default App;
+export default App
