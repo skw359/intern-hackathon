@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getWorkouts, createWorkout, deleteWorkout, updateWorkout, updateUserProfile } from '../services/api';
+import { getWorkouts, createWorkout, deleteWorkout, updateWorkout, updateUserProfile, generateAndSaveWorkout } from '../services/api';
 import Header from '../components/Header/Header';
 import WorkoutCalendar from '../components/WorkoutCalendar/WorkoutCalendar';
 import ProfileModal from '../components/Modals/ProfileModal';
@@ -9,6 +9,9 @@ import DateModal from '../components/Modals/DateModal';
 import "./home.css";
 
 export default function Home() {
+  const today = new Date();
+  const todayStr = today.toISOString().slice(0, 10); // "YYYY-MM-DD"
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [name, setName] = useState(localStorage.getItem('name') || 'User');
   const [showModal, setShowModal] = useState(false);
   const [showEventModal, setShowEventModal] = useState(false);
@@ -201,11 +204,31 @@ export default function Home() {
   const calendarEvents = workouts.map(workout => ({
     title: workout.title || 'Workout',
     date: workout.date.split('T')[0],
-    extendedProps: {
-      _id: workout._id,
-      exercises: workout.exercises
-    }
+    _id: workout._id
   }));
+
+  const handleGenerateAndSave = async (e) => {
+  e.preventDefault();
+  setError(null);
+  setIsSubmitting(true);
+
+  try {
+    // fall back to today if no date selected
+    const dateStr = selectedDate || todayStr;
+
+    // call the new backend route that runs Gemini + creates the workout
+    const created = await generateAndSaveWorkout(workoutDescription, dateStr);
+
+    // push it into state so calendar refreshes
+    setWorkouts(ws => [...ws, created]);
+    handleCloseModal();
+  } catch (err) {
+    console.error('Generate+Save error:', err);
+    setError('Failed to generate workout plan. Please try again.');
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   return (
     <>
@@ -216,7 +239,7 @@ export default function Home() {
           <p className="greeting-subtitle">Here's your personalized workout schedule</p>
         </div>
         <button className="add-plan-button" onClick={handleAddPlan}>
-          Add Plan
+          Generate Plan
         </button>
       </div>
       {error && (
@@ -235,7 +258,7 @@ export default function Home() {
         onClose={handleCloseModal}
         workoutDescription={workoutDescription}
         setWorkoutDescription={setWorkoutDescription}
-        onSubmit={handleSubmit}
+        onSubmit={handleGenerateAndSave}
         error={error}
       />
 
