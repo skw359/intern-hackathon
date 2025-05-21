@@ -25,10 +25,19 @@ export default function Survey() {
     e.preventDefault();
     try {
       await updateUserProfile(formData);
+      localStorage.setItem('hasCompletedSurvey', 'true');
       navigate('/home');
     } catch (err) {
       setError('Failed to save profile information. Please try again.');
     }
+  };
+
+  const handleCancel = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('name');
+    localStorage.removeItem('hasCompletedSurvey');
+    navigate('/');
   };
 
   return (
@@ -36,7 +45,6 @@ export default function Survey() {
       <form className="survey-form" onSubmit={handleSubmit}>
         <h2 className="survey-title">Tell us about yourself</h2>
         {error && <div className="error-message">{error}</div>}
-        }
         
         <div className="form-group">
           <label htmlFor="weight">Weight (in kg)</label>
@@ -102,9 +110,14 @@ export default function Survey() {
           </select>
         </div>
 
-        <button type="submit" className="submit-button">
-          Continue to Dashboard
-        </button>
+        <div className="button-group">
+          <button type="button" className="cancel-button" onClick={handleCancel}>
+            Cancel
+          </button>
+          <button type="submit" className="submit-button">
+            Continue to Dashboard
+          </button>
+        </div>
       </form>
     </div>
   );
