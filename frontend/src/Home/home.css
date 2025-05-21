@@ -1,3 +1,4 @@
+/* Existing styles */
 .fc-event:hover {
   background-color: #0c2c71 !important;
   color: white !important;
@@ -34,6 +35,27 @@
   font-weight: 700;
   text-align: center;
   margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.profile-button {
+  background-color: #111;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.profile-button:hover {
+  background-color: #333;
 }
 
 .logout-button {

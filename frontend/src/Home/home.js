@@ -4,15 +4,16 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import { useNavigate } from 'react-router-dom'
 
-import { getWorkouts, createWorkout, deleteWorkout, updateWorkout } from '../services/api'
+import { getWorkouts, createWorkout, deleteWorkout, updateWorkout, updateUserProfile } from '../services/api'
 import "./home.css"
 
 export default function Home() {
   const navigate = useNavigate()
-  const [name] = useState(localStorage.getItem('name') || 'User')
+  const [name, setName] = useState(localStorage.getItem('name') || 'User')
   const [showModal, setShowModal] = useState(false)
   const [showEventModal, setShowEventModal] = useState(false)
   const [showDateModal, setShowDateModal] = useState(false)
+  const [showProfileModal, setShowProfileModal] = useState(false)
   const [selectedEvent, setSelectedEvent] = useState(null)
   const [selectedWorkout, setSelectedWorkout] = useState(null)
   const [selectedDate, setSelectedDate] = useState(null)
@@ -21,6 +22,12 @@ export default function Home() {
   const [exercises, setExercises] = useState([])
   const [workouts, setWorkouts] = useState([])
   const [error, setError] = useState(null)
+  const [profileData, setProfileData] = useState({
+    weight: '',
+    age: '',
+    gender: '',
+    experience: ''
+  })
 
   useEffect(() => {
     loadWorkouts()
@@ -161,6 +168,17 @@ export default function Home() {
     setExercises(newExercises)
   }
 
+  const handleProfileSubmit = async (e) => {
+    e.preventDefault()
+    try {
+      setError(null)
+      await updateUserProfile(profileData)
+      setShowProfileModal(false)
+    } catch (error) {
+      setError('Failed to update profile. Please try again.')
+    }
+  }
+
   const calendarEvents = workouts.map(workout => ({
     title: workout.title || 'Workout',
     date: workout.date.split('T')[0],
@@ -171,9 +189,14 @@ export default function Home() {
     <>
       <header className="header">
         <h1 className="header-logo">YouWork</h1>
-        <button className="logout-button" onClick={handleLogout}>
-          Logout
-        </button>
+        <div className="header-actions">
+          <button className="profile-button" onClick={() => setShowProfileModal(true)}>
+            Profile
+          </button>
+          <button className="logout-button" onClick={handleLogout}>
+            Logout
+          </button>
+        </div>
       </header>
       <div className="greeting-container">
         <div className="greeting-text">
@@ -369,6 +392,93 @@ export default function Home() {
                     disabled={exercises.length === 0}
                   >
                     Add Workout
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {showProfileModal && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <div className="modal-header">
+              <h3 className="modal-title">Edit Profile</h3>
+              <button className="close-button" onClick={() => setShowProfileModal(false)}>&times;</button>
+            </div>
+            <form className="modal-form" onSubmit={handleProfileSubmit}>
+              <div className="form-group">
+                <label htmlFor="weight">Weight (in kg)</label>
+                <input
+                  type="number"
+                  id="weight"
+                  value={profileData.weight}
+                  onChange={(e) => setProfileData({...profileData, weight: e.target.value})}
+                  required
+                  min="20"
+                  max="300"
+                  className="workout-input"
+                  placeholder="Enter your weight"
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="age">Age</label>
+                <input
+                  type="number"
+                  id="age"
+                  value={profileData.age}
+                  onChange={(e) => setProfileData({...profileData, age: e.target.value})}
+                  required
+                  min="13"
+                  max="120"
+                  className="workout-input"
+                  placeholder="Enter your age"
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="gender">Gender</label>
+                <select
+                  id="gender"
+                  value={profileData.gender}
+                  onChange={(e) => setProfileData({...profileData, gender: e.target.value})}
+                  required
+                  className="workout-input"
+                >
+                  <option value="">Select gender</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="other">Other</option>
+                  <option value="prefer-not-to-say">Prefer not to say</option>
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="experience">Fitness Experience Level</label>
+                <select
+                  id="experience"
+                  value={profileData.experience}
+                  onChange={(e) => setProfileData({...profileData, experience: e.target.value})}
+                  required
+                  className="workout-input"
+                >
+                  <option value="">Select experience level</option>
+                  <option value="beginner">Beginner</option>
+                  <option value="intermediate">Intermediate</option>
+                  <option value="advanced">Advanced</option>
+                  <option value="expert">Expert</option>
+                </select>
+              </div>
+
+              <div className="form-actions">
+                <div className="button-group">
+                  <button type="button" className="cancel-button" onClick={() => setShowProfileModal(false)}>
+                    Cancel
+                  </button>
+                  <button type="submit" className="submit-button">
+                    Save Changes
                   </button>
                 </div>
               </div>
