@@ -60,7 +60,11 @@ export const getWorkouts = async () => {
         authorization: `Bearer ${token}`
       }
     });
-    return response.data;
+    return response.data.map(workout => ({
+      title: workout.title || 'Workout',
+      date: workout.date,
+      exercises: workout.exercises || []
+    }));
   } catch (error) {
     throw new Error(`Failed to fetch workouts: ${error.response?.data?.message || error.message}`);
   }
