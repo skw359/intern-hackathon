@@ -8,6 +8,9 @@ export default function Header({ onProfileClick }) {
   const handleLogout = () => {
     localStorage.clear();
     navigate('/');
+    window.location.reload();
+
+    
   };
 
   return (
