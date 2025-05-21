@@ -23,10 +23,10 @@ export default function Home() {
   const [workouts, setWorkouts] = useState([])
   const [error, setError] = useState(null)
   const [profileData, setProfileData] = useState({
-    weight: '',
-    age: '',
-    gender: '',
-    experience: ''
+    weight: localStorage.getItem('weight') || '',
+    age: localStorage.getItem('age') || '',
+    gender: localStorage.getItem('gender') || '',
+    experience: localStorage.getItem('experience') || ''
   })
 
   useEffect(() => {
@@ -173,6 +173,10 @@ export default function Home() {
     try {
       setError(null)
       await updateUserProfile(profileData)
+      // Save profile data to localStorage
+      Object.entries(profileData).forEach(([key, value]) => {
+        localStorage.setItem(key, value)
+      })
       setShowProfileModal(false)
     } catch (error) {
       setError('Failed to update profile. Please try again.')
