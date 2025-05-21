@@ -1,7 +1,7 @@
 import React from 'react';
 import './Modals.css';
 
-export default function EventModal({ show, onClose, event, workout, onDelete }) {
+export default function EventModal({ show, onClose, event, workout, onDelete, onEdit }) {
   if (!show || !event || !workout) return null;
 
   return (
@@ -29,6 +29,7 @@ export default function EventModal({ show, onClose, event, workout, onDelete }) 
         <div className="modal-footer">
           <div className="button-group">
             <button className="cancel-button" onClick={onClose}>Close</button>
+            <button className="edit-button" onClick={() => onEdit(workout)}>Edit</button>
             {event.extendedProps._id && (
               <button className="delete-button" onClick={onDelete}>Delete</button>
             )}

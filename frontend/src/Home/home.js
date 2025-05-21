@@ -22,6 +22,7 @@ export default function Home() {
   const [exercises, setExercises] = useState([]);
   const [workouts, setWorkouts] = useState([]);
   const [error, setError] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({
     weight: localStorage.getItem('weight') || '',
     age: localStorage.getItem('age') || '',
@@ -65,6 +66,7 @@ export default function Home() {
     setShowEventModal(false);
     setSelectedEvent(null);
     setSelectedWorkout(null);
+    setIsEditing(false);
   };
 
   const handleCloseDateModal = () => {
@@ -72,6 +74,7 @@ export default function Home() {
     setSelectedDate(null);
     setWorkoutTitle('');
     setExercises([]);
+    setIsEditing(false);
   };
 
   const handleDateClick = (arg) => {
@@ -111,16 +114,23 @@ export default function Home() {
 
     try {
       setError(null);
-      await createWorkout({
+      const workoutData = {
         title: workoutTitle,
         date: selectedDate,
         exercises: exercises
-      });
+      };
+
+      if (isEditing && selectedWorkout?._id) {
+        await updateWorkout(selectedWorkout._id, workoutData);
+      } else {
+        await createWorkout(workoutData);
+      }
+      
       await loadWorkouts();
       handleCloseDateModal();
     } catch (error) {
-      console.error('Failed to create workout:', error);
-      setError('Failed to create workout. Please try again.');
+      console.error('Failed to save workout:', error);
+      setError('Failed to save workout. Please try again.');
     }
   };
 
@@ -139,6 +149,15 @@ export default function Home() {
       console.error('Failed to delete workout:', error);
       setError('Failed to delete workout. Please try again.');
     }
+  };
+
+  const handleEditWorkout = (workout) => {
+    setWorkoutTitle(workout.title);
+    setExercises(workout.exercises);
+    setSelectedDate(workout.date);
+    setIsEditing(true);
+    setShowEventModal(false);
+    setShowDateModal(true);
   };
 
   const handleAddExercise = () => {
@@ -221,6 +240,7 @@ export default function Home() {
         event={selectedEvent}
         workout={selectedWorkout}
         onDelete={handleDeleteWorkout}
+        onEdit={handleEditWorkout}
       />
 
       <DateModal
