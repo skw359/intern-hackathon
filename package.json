@@ -3,5 +3,8 @@
     "dev": "npm run build-frontend && npm run start-backend",
     "build-frontend": "cd frontend && npm install && npm run build",
     "start-backend": "cd backend && npm install && node app.js"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1"
   }
 }
