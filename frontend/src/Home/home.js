@@ -83,10 +83,17 @@ export default function Home() {
     e.preventDefault()
     try {
       setError(null)
-      await createWorkout({ 
-        description: workoutDescription,
-        date: selectedDate || new Date().toISOString()
-      })
+      const workout = {
+        title: 'Quick Workout',
+        date: selectedDate || new Date().toISOString().split('T')[0],
+        exercises: [{
+          name: 'Exercise',
+          description: workoutDescription,
+          sets: 1,
+          reps: 1
+        }]
+      }
+      await createWorkout(workout)
       await loadWorkouts()
       handleCloseModal()
     } catch (error) {
