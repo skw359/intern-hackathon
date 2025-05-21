@@ -52,15 +52,6 @@ export const register = async (name, email, password) => {
   }
 };
 
-export const submitSurvey = async (surveyData) => {
-  try {
-    const response = await api.post('/survey', surveyData);
-    return response.data;
-  } catch (error) {
-    throw new Error(`Failed to submit survey: ${error.response?.data?.message || error.message}`);
-  }
-};
-
 export const getWorkouts = async () => {
   try {
     const token = localStorage.getItem('token');

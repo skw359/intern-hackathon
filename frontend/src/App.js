@@ -1,7 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import Login from './Login/login'
 import Register from './Register/register'
-import Survey from './Survey/survey'
 import Home from './Home/home';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -18,7 +17,6 @@ function App() {
           element={isAuthenticated ? <Navigate to="/home" replace /> : <Login />} 
         />
         <Route path="/register" element={<Register />} />
-        <Route path="/survey" element={<Survey />} />
         <Route 
           path="/home" 
           element={
