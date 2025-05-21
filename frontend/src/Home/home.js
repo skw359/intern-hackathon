@@ -12,8 +12,11 @@ export default function Home() {
   const [name] = useState(localStorage.getItem('name') || 'User')
   const [showModal, setShowModal] = useState(false)
   const [showEventModal, setShowEventModal] = useState(false)
+  const [showDateModal, setShowDateModal] = useState(false)
   const [selectedEvent, setSelectedEvent] = useState(null)
+  const [selectedDate, setSelectedDate] = useState(null)
   const [workoutDescription, setWorkoutDescription] = useState('')
+  const [dateWorkoutDescription, setDateWorkoutDescription] = useState('')
   const [workouts, setWorkouts] = useState([])
   const [error, setError] = useState(null)
 
@@ -46,6 +49,7 @@ export default function Home() {
   const handleCloseModal = () => {
     setShowModal(false)
     setWorkoutDescription('')
+    setSelectedDate(null)
   }
 
   const handleEventClick = (clickInfo) => {
@@ -58,9 +62,15 @@ export default function Home() {
     setSelectedEvent(null)
   }
 
+  const handleCloseDateModal = () => {
+    setShowDateModal(false)
+    setSelectedDate(null)
+    setDateWorkoutDescription('')
+  }
+
   const handleDateClick = (arg) => {
-    setShowModal(true)
-    setWorkoutDescription('')
+    setSelectedDate(arg.dateStr)
+    setShowDateModal(true)
   }
 
   const handleSubmit = async (e) => {
@@ -69,10 +79,26 @@ export default function Home() {
       setError(null)
       await createWorkout({ 
         description: workoutDescription,
-        date: selectedEvent ? selectedEvent.startStr : new Date().toISOString()
+        date: selectedDate || new Date().toISOString()
       })
       await loadWorkouts()
       handleCloseModal()
+    } catch (error) {
+      console.error('Failed to create workout:', error)
+      setError('Failed to create workout. Please try again.')
+    }
+  }
+
+  const handleDateSubmit = async (e) => {
+    e.preventDefault()
+    try {
+      setError(null)
+      await createWorkout({
+        description: dateWorkoutDescription,
+        date: selectedDate
+      })
+      await loadWorkouts()
+      handleCloseDateModal()
     } catch (error) {
       console.error('Failed to create workout:', error)
       setError('Failed to create workout. Please try again.')
@@ -187,6 +213,36 @@ export default function Home() {
                 )}
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {showDateModal && selectedDate && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <div className="modal-header">
+              <h3 className="modal-title">Add Workout for {selectedDate}</h3>
+              <button className="close-button" onClick={handleCloseDateModal}>&times;</button>
+            </div>
+            <form className="modal-form" onSubmit={handleDateSubmit}>
+              <div className="form-group">
+                <label htmlFor="dateWorkoutDescription">Describe your workout for this date:</label>
+                <textarea
+                  id="dateWorkoutDescription"
+                  value={dateWorkoutDescription}
+                  onChange={(e) => setDateWorkoutDescription(e.target.value)}
+                  required
+                  className="workout-textarea"
+                  placeholder="Enter workout details"
+                />
+              </div>
+              <div className="form-actions">
+                <div className="button-group">
+                  <button type="button" className="cancel-button" onClick={handleCloseDateModal}>Cancel</button>
+                  <button type="submit" className="submit-button">Add Workout</button>
+                </div>
+              </div>
+            </form>
           </div>
         </div>
       )}
