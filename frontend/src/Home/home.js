@@ -17,7 +17,8 @@ export default function Home() {
   const [selectedWorkout, setSelectedWorkout] = useState(null)
   const [selectedDate, setSelectedDate] = useState(null)
   const [workoutDescription, setWorkoutDescription] = useState('')
-  const [dateWorkoutDescription, setDateWorkoutDescription] = useState('')
+  const [workoutTitle, setWorkoutTitle] = useState('')
+  const [exercises, setExercises] = useState([])
   const [workouts, setWorkouts] = useState([])
   const [error, setError] = useState(null)
 
@@ -69,7 +70,8 @@ export default function Home() {
   const handleCloseDateModal = () => {
     setShowDateModal(false)
     setSelectedDate(null)
-    setDateWorkoutDescription('')
+    setWorkoutTitle('')
+    setExercises([])
   }
 
   const handleDateClick = (arg) => {
@@ -95,11 +97,17 @@ export default function Home() {
 
   const handleDateSubmit = async (e) => {
     e.preventDefault()
+    if (exercises.length === 0) {
+      setError('Please add at least one exercise')
+      return
+    }
+
     try {
       setError(null)
       await createWorkout({
-        description: dateWorkoutDescription,
-        date: selectedDate
+        title: workoutTitle,
+        date: selectedDate,
+        exercises: exercises
       })
       await loadWorkouts()
       handleCloseDateModal()
@@ -124,6 +132,28 @@ export default function Home() {
       console.error('Failed to delete workout:', error)
       setError('Failed to delete workout. Please try again.')
     }
+  }
+
+  const handleAddExercise = () => {
+    setExercises([...exercises, {
+      name: '',
+      description: '',
+      sets: 1,
+      reps: 1
+    }])
+  }
+
+  const handleRemoveExercise = (index) => {
+    setExercises(exercises.filter((_, i) => i !== index))
+  }
+
+  const handleExerciseChange = (index, field, value) => {
+    const newExercises = [...exercises]
+    newExercises[index] = {
+      ...newExercises[index],
+      [field]: field === 'sets' || field === 'reps' ? parseInt(value) || 0 : value
+    }
+    setExercises(newExercises)
   }
 
   const calendarEvents = workouts.map(workout => ({
@@ -241,20 +271,100 @@ export default function Home() {
             </div>
             <form className="modal-form" onSubmit={handleDateSubmit}>
               <div className="form-group">
-                <label htmlFor="dateWorkoutDescription">Describe your workout for this date:</label>
-                <textarea
-                  id="dateWorkoutDescription"
-                  value={dateWorkoutDescription}
-                  onChange={(e) => setDateWorkoutDescription(e.target.value)}
+                <label htmlFor="workoutTitle">Workout Title</label>
+                <input
+                  type="text"
+                  id="workoutTitle"
+                  value={workoutTitle}
+                  onChange={(e) => setWorkoutTitle(e.target.value)}
                   required
-                  className="workout-textarea"
-                  placeholder="Enter workout details"
+                  className="workout-input"
+                  placeholder="Enter workout title"
                 />
               </div>
+              
+              <div className="exercises-container">
+                <h4>Exercises</h4>
+                {exercises.map((exercise, index) => (
+                  <div key={index} className="exercise-item">
+                    <div className="exercise-header">
+                      <h4>Exercise {index + 1}</h4>
+                      <button
+                        type="button"
+                        className="remove-exercise-button"
+                        onClick={() => handleRemoveExercise(index)}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                    <div className="exercise-fields">
+                      <div className="form-group">
+                        <label>Exercise Name</label>
+                        <input
+                          type="text"
+                          value={exercise.name}
+                          onChange={(e) => handleExerciseChange(index, 'name', e.target.value)}
+                          required
+                          className="workout-input"
+                          placeholder="Enter exercise name"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label>Description</label>
+                        <textarea
+                          value={exercise.description}
+                          onChange={(e) => handleExerciseChange(index, 'description', e.target.value)}
+                          required
+                          className="workout-textarea"
+                          placeholder="Enter exercise description"
+                        />
+                      </div>
+                      <div className="exercise-numbers">
+                        <div className="form-group">
+                          <label>Sets</label>
+                          <input
+                            type="number"
+                            min="1"
+                            value={exercise.sets}
+                            onChange={(e) => handleExerciseChange(index, 'sets', e.target.value)}
+                            required
+                            className="workout-input"
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label>Reps</label>
+                          <input
+                            type="number"
+                            min="1"
+                            value={exercise.reps}
+                            onChange={(e) => handleExerciseChange(index, 'reps', e.target.value)}
+                            required
+                            className="workout-input"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  className="add-exercise-button"
+                  onClick={handleAddExercise}
+                >
+                  Add Exercise
+                </button>
+              </div>
+
               <div className="form-actions">
                 <div className="button-group">
                   <button type="button" className="cancel-button" onClick={handleCloseDateModal}>Cancel</button>
-                  <button type="submit" className="submit-button">Add Workout</button>
+                  <button
+                    type="submit"
+                    className="submit-button"
+                    disabled={exercises.length === 0}
+                  >
+                    Add Workout
+                  </button>
                 </div>
               </div>
             </form>
