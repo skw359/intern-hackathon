@@ -28,7 +28,6 @@ export default function Login() {
       <h1 className="login-logo">YouWork</h1>
       <form className="login-form" onSubmit={handleSubmit}>
         {error && <div className="error-message">{error}</div>}
-        }
         <label>Email</label>
         <input
           type="email"

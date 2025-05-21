@@ -31,7 +31,7 @@ function App() {
           path="/home" 
           element={
             <ProtectedRoute>
-              {!hasCompletedSurvey ? <Navigate to="/survey" replace /> : <Home />}
+              <Home />
             </ProtectedRoute>
           } 
         />
