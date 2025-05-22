@@ -27,26 +27,15 @@ export default function Home() {
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({
-    weight: '',
-    age: '',
-    gender: '',
-    experience: ''
+    weight: localStorage.getItem('weight') || '',
+    age: localStorage.getItem('age') || '',
+    gender: localStorage.getItem('gender') || '',
+    experience: localStorage.getItem('experience') || ''
   });
 
   useEffect(() => {
     loadWorkouts();
   }, []);
-
-  const handleProfileClick = () => {
-    // Load existing profile data from localStorage
-    setProfileData({
-      weight: localStorage.getItem('weight') || '',
-      age: localStorage.getItem('age') || '',
-      gender: localStorage.getItem('gender') || '',
-      experience: localStorage.getItem('experience') || ''
-    });
-    setShowProfileModal(true);
-  };
 
   const loadWorkouts = async () => {
     try {
@@ -202,7 +191,6 @@ export default function Home() {
     try {
       setError(null);
       await updateUserProfile(profileData);
-      // Save to localStorage for persistence
       Object.entries(profileData).forEach(([key, value]) => {
         localStorage.setItem(key, value);
       });
@@ -219,26 +207,31 @@ export default function Home() {
   }));
 
   const handleGenerateAndSave = async (e) => {
-    e.preventDefault();
-    setError(null);
-    setIsSubmitting(true);
+  e.preventDefault();
+  setError(null);
+  setIsSubmitting(true);
 
-    try {
-      const dateStr = selectedDate || todayStr;
-      const created = await generateAndSaveWorkout(workoutDescription, dateStr);
-      setWorkouts(ws => [...ws, created]);
-      handleCloseModal();
-    } catch (err) {
-      console.error('Generate+Save error:', err);
-      setError('Failed to generate workout plan. Please try again.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  try {
+    // fall back to today if no date selected
+    const dateStr = selectedDate || todayStr;
+
+    // call the new backend route that runs Gemini + creates the workout
+    const created = await generateAndSaveWorkout(workoutDescription, dateStr);
+
+    // push it into state so calendar refreshes
+    setWorkouts(ws => [...ws, created]);
+    handleCloseModal();
+  } catch (err) {
+    console.error('Generate+Save error:', err);
+    setError('Failed to generate workout plan. Please try again.');
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   return (
     <>
-      <Header onProfileClick={handleProfileClick} />
+      <Header onProfileClick={() => setShowProfileModal(true)} />
       <div className="greeting-container">
         <div className="greeting-text">
           <h2 className="greeting">Welcome back, {name}!</h2>
