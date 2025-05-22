@@ -16,7 +16,7 @@ export default function WorkoutModal({
     <div className="modal-overlay">
       <div className="modal">
         <div className="modal-header">
-          <h3 className="modal-title">Add New Workout</h3>
+          <h3 className="modal-title">Generate Workout Plan</h3>
           <button 
             className="close-button" 
             onClick={onClose}
@@ -27,22 +27,21 @@ export default function WorkoutModal({
         </div>
         <form className="modal-form" onSubmit={onSubmit}>
           {error && <div className="error-message">{error}</div>}
-          }
           <div className="form-group">
-            <label htmlFor="workoutDescription">Describe your desired workout!</label>
+            <label htmlFor="workoutDescription">What kind of workout would you like?</label>
             <textarea
               id="workoutDescription"
               value={workoutDescription}
               onChange={(e) => setWorkoutDescription(e.target.value)}
               required
               className="workout-textarea"
-              placeholder="describe here"
+              placeholder="Example: A 30-minute full body workout focusing on strength training"
               disabled={isSubmitting}
             />
           </div>
           <div className="form-actions">
             <div className="disclaimer">
-              Please include all crucial details about your workout
+              Include details like duration, focus areas, and any specific preferences
             </div>
             <div className="button-group">
               <button 
@@ -58,7 +57,7 @@ export default function WorkoutModal({
                 className="submit-button"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? 'Generating...' : 'Submit'}
+                {isSubmitting ? 'Generating Plan...' : 'Generate Plan'}
               </button>
             </div>
           </div>
