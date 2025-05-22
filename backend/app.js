@@ -97,7 +97,8 @@ app.get('/api/profile', authMiddleware, async (req, res) => {
       weight: user.weight,
       age: user.age,
       gender: user.gender,
-      experience: user.experience
+      experience: user.experience,
+      completedProfile: user.completedProfile
     });
   } catch (error) {
     console.error('Error fetching user profile:', error);
@@ -125,7 +126,9 @@ app.put('/api/profile', authMiddleware, async (req, res) => {
     if (age !== undefined) user.age = age;
     if (gender !== undefined) user.gender = gender;
     if (experience !== undefined) user.experience = experience;
-
+    if (weight && age && gender && experience) {
+      user.completedProfile = true;
+    }
     await user.save();
 
     res.json({
@@ -134,7 +137,8 @@ app.put('/api/profile', authMiddleware, async (req, res) => {
       weight: user.weight,
       age: user.age,
       gender: user.gender,
-      experience: user.experience
+      experience: user.experience,
+      completedProfile: user.completedProfile
     });
   } catch (error) {
     console.error('Error updating user profile:', error);
@@ -338,7 +342,7 @@ Rules:
 - **Beginner**: 40–50% body weight for compound, 20–30% for isolation
 - **Intermediate**: 60–70% compound, 30–40% isolation  
 - **Advanced**: 80–90% compound, 40–50% isolation  
-- Include the weight in the brief description, if applicable.
+- Include the weight in pounds in the brief description, if applicable.
 
 
 WORKOUT NAME: "${description}"

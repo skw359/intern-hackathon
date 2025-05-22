@@ -18,9 +18,6 @@ export default function Login() {
       setIsSubmitting(true)
       const data = await login(email, password)
       localStorage.setItem('token', data.token)
-      localStorage.setItem('userId', data.userId)
-      localStorage.setItem('name', data.name)
-      localStorage.setItem('hasCompletedSurvey', data.hasCompletedSurvey)
       navigate('/home')
     } catch (err) {
       setError('Invalid email or password')
@@ -34,7 +31,7 @@ export default function Login() {
       <h1 className="login-logo">YouWork</h1>
       <form className="login-form" onSubmit={handleSubmit}>
         {error && <div className="error-message">{error}</div>}
-        }
+        
         <div className="form-group">
           <label htmlFor="email">Email</label>
           <input

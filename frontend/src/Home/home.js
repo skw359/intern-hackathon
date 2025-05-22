@@ -27,12 +27,7 @@ export default function Home() {
   const [workouts, setWorkouts] = useState([]);
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [profileData, setProfileData] = useState({
-    weight: '',
-    age: '',
-    gender: '',
-    experience: ''
-  });
+  const [profileData, setProfileData] = useState(null);
 
   useEffect(() => {
     loadWorkouts();
@@ -46,8 +41,16 @@ export default function Home() {
         weight: data.weight || '',
         age: data.age || '',
         gender: data.gender || '',
-        experience: data.experience || ''
+        experience: data.experience || '',
+        completedProfile: data.completedProfile || ''
       });
+      if (data.name) {
+        setName(data.name);
+        localStorage.setItem('name', data.name);
+      }
+      if (!data.completedProfile) {
+        setShowProfileModal(true);
+      }
     } catch (error) {
       console.error('Failed to load profile:', error);
     }

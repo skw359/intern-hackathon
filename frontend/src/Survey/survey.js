@@ -29,7 +29,6 @@ export default function Survey() {
     try {
       setIsSubmitting(true);
       await updateUserProfile(formData);
-      localStorage.setItem('hasCompletedSurvey', 'true');
       navigate('/home');
     } catch (err) {
       setError('Failed to save profile information. Please try again.');
@@ -52,7 +51,7 @@ export default function Survey() {
         }
         
         <div className="form-group">
-          <label htmlFor="weight">Weight (in kg)</label>
+          <label htmlFor="weight">Weight (in lb)</label>
           <input
             type="number"
             id="weight"
@@ -60,8 +59,8 @@ export default function Survey() {
             value={formData.weight}
             onChange={handleChange}
             required
-            min="20"
-            max="300"
+            min="50"
+            max="400"
             placeholder="Enter your weight"
             disabled={isSubmitting}
           />
