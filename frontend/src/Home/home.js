@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getWorkouts, createWorkout, deleteWorkout, updateWorkout, updateUserProfile, generateAndSaveWorkout } from '../services/api';
+import { getWorkouts, createWorkout, deleteWorkout, updateWorkout, updateUserProfile, generateAndSaveWorkout, getUserProfile } from '../services/api';
 import Header from '../components/Header/Header';
 import WorkoutCalendar from '../components/WorkoutCalendar/WorkoutCalendar';
 import ProfileModal from '../components/Modals/ProfileModal';
@@ -36,7 +36,22 @@ export default function Home() {
 
   useEffect(() => {
     loadWorkouts();
+    loadProfile();
   }, []);
+
+  const loadProfile = async () => {
+    try {
+      const data = await getUserProfile();
+      setProfileData({
+        weight: data.weight || '',
+        age: data.age || '',
+        gender: data.gender || '',
+        experience: data.experience || ''
+      });
+    } catch (error) {
+      console.error('Failed to load profile:', error);
+    }
+  };
 
   const loadWorkouts = async () => {
     try {
@@ -214,9 +229,6 @@ export default function Home() {
       setIsSubmitting(true);
       setError(null);
       await updateUserProfile(profileData);
-      Object.entries(profileData).forEach(([key, value]) => {
-        localStorage.setItem(key, value);
-      });
       setShowProfileModal(false);
     } catch (error) {
       setError('Failed to update profile. Please try again.');
@@ -306,7 +318,9 @@ export default function Home() {
         workoutTitle={workoutTitle}
         setWorkoutTitle={setWorkoutTitle}
         exercises={exercises}
-        onExerciseAdd={handleAddExercise}
+        onExerciseAdd={handle
+
+AddExercise}
         onExerciseRemove={handleRemoveExercise}
         onExerciseChange={handleExerciseChange}
         onSubmit={handleDateSubmit}

@@ -37,6 +37,14 @@ api.interceptors.response.use(
 export const login = async (email, password) => {
   try {
     const response = await api.post('/auth/login', { email, password });
+    const { weight, age, gender, experience } = response.data;
+    
+    // Store profile data in localStorage
+    if (weight) localStorage.setItem('weight', weight);
+    if (age) localStorage.setItem('age', age);
+    if (gender) localStorage.setItem('gender', gender);
+    if (experience) localStorage.setItem('experience', experience);
+    
     return response.data;
   } catch (error) {
     throw new Error(`Login failed: ${error.response?.data?.message || error.message}`);
@@ -52,9 +60,34 @@ export const register = async (name, email, password) => {
   }
 };
 
+export const getUserProfile = async () => {
+  try {
+    const response = await api.get('/me');
+    const { weight, age, gender, experience } = response.data;
+    
+    // Update localStorage with latest profile data
+    if (weight) localStorage.setItem('weight', weight);
+    if (age) localStorage.setItem('age', age);
+    if (gender) localStorage.setItem('gender', gender);
+    if (experience) localStorage.setItem('experience', experience);
+    
+    return response.data;
+  } catch (error) {
+    throw new Error(`Failed to fetch profile: ${error.response?.data?.message || error.message}`);
+  }
+};
+
 export const updateUserProfile = async (profileData) => {
   try {
-    const response = await api.post('/auth/profile', profileData);
+    const response = await api.put('/me', profileData);
+    const { weight, age, gender, experience } = response.data;
+    
+    // Update localStorage with new profile data
+    if (weight) localStorage.setItem('weight', weight);
+    if (age) localStorage.setItem('age', age);
+    if (gender) localStorage.setItem('gender', gender);
+    if (experience) localStorage.setItem('experience', experience);
+    
     return response.data;
   } catch (error) {
     throw new Error(`Failed to update profile: ${error.response?.data?.message || error.message}`);
@@ -123,7 +156,6 @@ export const deleteWorkout = async (workoutId) => {
   }
 };
 
-// services/api.js 
 export const generateAndSaveWorkout = async (description, date) => {
   const res = await api.post('/generateWorkout', { description, date });
   return res.data;  // the newly created Workout object

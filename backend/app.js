@@ -67,7 +67,11 @@ app.post('/api/auth/login', async (req, res) => {
     res.json({
       token,
       userId: user._id,
-      name: user.name
+      name: user.name,
+      weight: user.weight,
+      age: user.age,
+      gender: user.gender,
+      experience: user.experience
     });
   } catch (error) {
     console.error('Login error:', error);
@@ -83,13 +87,57 @@ app.post('/api/auth/login', async (req, res) => {
  */
 app.get('/api/me', authMiddleware, async (req, res) => {
   try {
-    const user = await User.findById(req.user.userId).select('name email');
+    const user = await User.findById(req.user.userId).select('name email weight age gender experience');
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-    res.json({ name: user.name, email: user.email });
+    res.json({
+      name: user.name,
+      email: user.email,
+      weight: user.weight,
+      age: user.age,
+      gender: user.gender,
+      experience: user.experience
+    });
   } catch (error) {
     console.error('Error fetching user profile:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+/**
+ * Update user profile endpoint
+ * @route PUT /api/me
+ * @middleware authMiddleware - Verifies JWT token
+ * @returns {object} Updated user profile data
+ */
+app.put('/api/me', authMiddleware, async (req, res) => {
+  try {
+    const { weight, age, gender, experience } = req.body;
+    const user = await User.findById(req.user.userId);
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Update only provided fields
+    if (weight !== undefined) user.weight = weight;
+    if (age !== undefined) user.age = age;
+    if (gender !== undefined) user.gender = gender;
+    if (experience !== undefined) user.experience = experience;
+
+    await user.save();
+
+    res.json({
+      name: user.name,
+      email: user.email,
+      weight: user.weight,
+      age: user.age,
+      gender: user.gender,
+      experience: user.experience
+    });
+  } catch (error) {
+    console.error('Error updating user profile:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
