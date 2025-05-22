@@ -28,10 +28,10 @@ export default function Home() {
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({
-    weight: localStorage.getItem('weight') || '',
-    age: localStorage.getItem('age') || '',
-    gender: localStorage.getItem('gender') || '',
-    experience: localStorage.getItem('experience') || ''
+    weight: '',
+    age: '',
+    gender: '',
+    experience: ''
   });
 
   useEffect(() => {
