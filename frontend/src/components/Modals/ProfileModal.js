@@ -29,7 +29,7 @@ export default function ProfileModal({
           {error && <div className="error-message">{error}</div>}
           
           <div className="form-group">
-            <label htmlFor="weight">Weight (in kg)</label>
+            <label htmlFor="weight">Weight (in lb)</label>
             <input
               type="number"
               id="weight"

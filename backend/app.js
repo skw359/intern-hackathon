@@ -314,7 +314,7 @@ app.post('/api/generateWorkout', authMiddleware, async (req, res, next) => {
     const { weight, age, gender, experience } = profile || {};
     const dateStr = date || new Date().toISOString().slice(0,10);
     const userIntro = 
-     `The user is a ${age}-year-old ${gender}, weighing ${weight} kg, ` +
+     `The user is a ${age}-year-old ${gender}, weighing ${weight} lb, ` +
      `${experience} level fitness.`;
 
     // Build the schema-prompt for AI generation
