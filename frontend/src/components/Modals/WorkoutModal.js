@@ -27,6 +27,7 @@ export default function WorkoutModal({
         </div>
         <form className="modal-form" onSubmit={onSubmit}>
           {error && <div className="error-message">{error}</div>}
+          }
           <div className="form-group">
             <label htmlFor="workoutDescription">Describe your desired workout!</label>
             <textarea
