@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { getUserProfile } from '../../services/api';
 import './Modals.css';
 
 export default function ProfileModal({ 
@@ -10,6 +11,27 @@ export default function ProfileModal({
   error,
   isSubmitting 
 }) {
+  useEffect(() => {
+    if (show) {
+      const fetchProfile = async () => {
+        try {
+          const data = await getUserProfile();
+          if (data.survey) {
+            setProfileData({
+              age: data.survey.age || '',
+              weight: data.survey.weight || '',
+              gender: data.survey.gender || '',
+              experience: data.survey.experience || ''
+            });
+          }
+        } catch (err) {
+          console.error('Failed to fetch profile:', err);
+        }
+      };
+      fetchProfile();
+    }
+  }, [show, setProfileData]);
+
   if (!show) return null;
 
   return (
