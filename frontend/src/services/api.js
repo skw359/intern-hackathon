@@ -43,10 +43,6 @@ export const login = async (email, password) => {
   }
 };
 
-// after registration, call api.post('/auth/login', ...) to log the user in using the credentials they just used to register
-
-// Once logged in, store the token, userId, and name in localStorage so that the subsequent requests can use them
-
 export const register = async (name, email, password) => {
   try {
     const response = await api.post('/auth/register', { name, email, password });
@@ -61,21 +57,23 @@ export const register = async (name, email, password) => {
   }
 };
 
+export const getUserProfile = async () => {
+  try {
+    const response = await api.get('/me');
+    return response.data;
+  } catch (error) {
+    throw new Error(`Failed to fetch profile: ${error.response?.data?.message || error.message}`);
+  }
+};
 
 export const updateUserProfile = async (profileData) => {
   try {
-    const token = localStorage.getItem('token');
-    const response = await api.post('/survey', profileData, { 
-      headers: {
-        authorization: `Bearer ${token}`
-      }
-    });
-    return response.data; 
+    const response = await api.put('/me', profileData);
+    return response.data;
   } catch (error) {
     throw new Error(`Failed to update profile: ${error.response?.data?.message || error.message}`);
   }
 };
-
 
 export const getWorkouts = async () => {
   try {
@@ -139,10 +137,9 @@ export const deleteWorkout = async (workoutId) => {
   }
 };
 
-// services/api.js 
 export const generateAndSaveWorkout = async (description, date) => {
   const res = await api.post('/generateWorkout', { description, date });
-  return res.data;  // the newly created Workout object
+  return res.data;
 };
 
 export default api;
