@@ -1,16 +1,21 @@
-// backend/services/gemini.js
 require('dotenv').config();
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-// Initialize with your API key
+// Initialize Gemini AI with API key
 const genAI = new GoogleGenerativeAI(process.env.GENERATIVE_API_KEY);
 
+/**
+ * Generate workout content using Google's Gemini AI
+ * @param {string} promptText - Text prompt for workout generation
+ * @returns {string} Generated workout plan
+ * @throws {Error} If generation fails
+ */
 async function generateWithGemini(promptText) {
   try {
-    // Get the model - use the correct model name without 'models/' prefix
+    // Initialize Gemini model
     const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
-    // The correct method is generateContent, not generateText
+    // Generate content with specified parameters
     const result = await model.generateContent({
       contents: [{ 
         role: 'user',
@@ -21,15 +26,16 @@ async function generateWithGemini(promptText) {
         maxOutputTokens: 512
       }
     });
+
+    // Log raw response for debugging
     const candidate = result.response.candidates[0];
     console.log('💡 Raw Gemini response:', candidate.content);   
 
-    // Get the response text from the result
+    // Extract and return generated text
     const response = result.response;
     return response.text();
   } catch (error) {
     console.error('Error generating content with Gemini:', error);
-    // Log additional error details if available
     if (error.response) {
       console.error('Error details:', error.response);
     }
