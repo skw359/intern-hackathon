@@ -22,7 +22,7 @@ export default function DateModal({
     <div className="modal-overlay">
       <div className="modal">
         <div className="modal-header">
-          <h3 className="modal-title">Add Workout for {date}</h3>
+          <h3 className="modal-title">{isEditing ? 'Edit Workout' : 'Add Workout'}</h3>
           <button 
             className="close-button" 
             onClick={onClose} 
