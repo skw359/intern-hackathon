@@ -41,7 +41,6 @@ export default function Register() {
       <h1 className="register-logo">YouWork</h1>
       <form className="register-form" onSubmit={handleSubmit}>
         {error && <div className="error-message">{error}</div>}
-        }
         <label>Name</label>
         <input
           type="text"
