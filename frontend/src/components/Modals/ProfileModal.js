@@ -1,7 +1,15 @@
 import React from 'react';
 import './Modals.css';
 
-export default function ProfileModal({ show, onClose, profileData, setProfileData, onSubmit, error }) {
+export default function ProfileModal({ 
+  show, 
+  onClose, 
+  profileData, 
+  setProfileData, 
+  onSubmit, 
+  error,
+  isSubmitting 
+}) {
   if (!show) return null;
 
   return (
@@ -9,11 +17,16 @@ export default function ProfileModal({ show, onClose, profileData, setProfileDat
       <div className="modal">
         <div className="modal-header">
           <h3 className="modal-title">Edit Profile</h3>
-          <button className="close-button" onClick={onClose}>&times;</button>
+          <button 
+            className="close-button" 
+            onClick={onClose}
+            disabled={isSubmitting}
+          >
+            &times;
+          </button>
         </div>
         <form className="modal-form" onSubmit={onSubmit}>
           {error && <div className="error-message">{error}</div>}
-          }
           <div className="form-group">
             <label htmlFor="weight">Weight (in kg)</label>
             <input
@@ -26,6 +39,7 @@ export default function ProfileModal({ show, onClose, profileData, setProfileDat
               max="300"
               className="workout-input"
               placeholder="Enter your weight"
+              disabled={isSubmitting}
             />
           </div>
 
@@ -41,6 +55,7 @@ export default function ProfileModal({ show, onClose, profileData, setProfileDat
               max="120"
               className="workout-input"
               placeholder="Enter your age"
+              disabled={isSubmitting}
             />
           </div>
 
@@ -52,6 +67,7 @@ export default function ProfileModal({ show, onClose, profileData, setProfileDat
               onChange={(e) => setProfileData({...profileData, gender: e.target.value})}
               required
               className="workout-input"
+              disabled={isSubmitting}
             >
               <option value="">Select gender</option>
               <option value="male">Male</option>
@@ -69,6 +85,7 @@ export default function ProfileModal({ show, onClose, profileData, setProfileDat
               onChange={(e) => setProfileData({...profileData, experience: e.target.value})}
               required
               className="workout-input"
+              disabled={isSubmitting}
             >
               <option value="">Select experience level</option>
               <option value="beginner">Beginner</option>
@@ -80,11 +97,20 @@ export default function ProfileModal({ show, onClose, profileData, setProfileDat
 
           <div className="form-actions">
             <div className="button-group">
-              <button type="button" className="cancel-button" onClick={onClose}>
+              <button 
+                type="button" 
+                className="cancel-button" 
+                onClick={onClose}
+                disabled={isSubmitting}
+              >
                 Cancel
               </button>
-              <button type="submit" className="submit-button">
-                Save Changes
+              <button 
+                type="submit" 
+                className="submit-button"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? 'Saving...' : 'Save Changes'}
               </button>
             </div>
           </div>

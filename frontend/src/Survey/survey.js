@@ -12,6 +12,7 @@ export default function Survey() {
     experience: ''
   });
   const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -23,16 +24,22 @@ export default function Survey() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
     try {
+      setIsSubmitting(true);
       await updateUserProfile(formData);
       localStorage.setItem('hasCompletedSurvey', 'true');
       navigate('/home');
     } catch (err) {
       setError('Failed to save profile information. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleCancel = () => {
+    if (isSubmitting) return;
     localStorage.clear();
     navigate('/');
   };
@@ -42,7 +49,6 @@ export default function Survey() {
       <form className="survey-form" onSubmit={handleSubmit}>
         <h2 className="survey-title">Tell us about yourself</h2>
         {error && <div className="error-message">{error}</div>}
-        }
         
         <div className="form-group">
           <label htmlFor="weight">Weight (in kg)</label>
@@ -56,6 +62,7 @@ export default function Survey() {
             min="20"
             max="300"
             placeholder="Enter your weight"
+            disabled={isSubmitting}
           />
         </div>
 
@@ -71,6 +78,7 @@ export default function Survey() {
             min="13"
             max="120"
             placeholder="Enter your age"
+            disabled={isSubmitting}
           />
         </div>
 
@@ -82,6 +90,7 @@ export default function Survey() {
             value={formData.gender}
             onChange={handleChange}
             required
+            disabled={isSubmitting}
           >
             <option value="">Select gender</option>
             <option value="male">Male</option>
@@ -99,6 +108,7 @@ export default function Survey() {
             value={formData.experience}
             onChange={handleChange}
             required
+            disabled={isSubmitting}
           >
             <option value="">Select experience level</option>
             <option value="beginner">Beginner</option>
@@ -109,11 +119,20 @@ export default function Survey() {
         </div>
 
         <div className="button-group">
-          <button type="button" className="cancel-button" onClick={handleCancel}>
+          <button 
+            type="button" 
+            className="cancel-button" 
+            onClick={handleCancel}
+            disabled={isSubmitting}
+          >
             Cancel
           </button>
-          <button type="submit" className="submit-button">
-            Continue to Dashboard
+          <button 
+            type="submit" 
+            className="submit-button"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Saving...' : 'Continue to Dashboard'}
           </button>
         </div>
       </form>
