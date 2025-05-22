@@ -12,6 +12,7 @@ export default function Home() {
   const today = new Date();
   const todayStr = today.toISOString().slice(0, 10); // "YYYY-MM-DD"
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [name, setName] = useState(localStorage.getItem('name') || 'User');
   const [showModal, setShowModal] = useState(false);
   const [showEventModal, setShowEventModal] = useState(false);
@@ -49,24 +50,27 @@ export default function Home() {
   };
 
   const handleAddPlan = () => {
+    if (isSubmitting) return;
     setShowModal(true);
   };
 
   const handleCloseModal = () => {
+    if (isSubmitting) return;
     setShowModal(false);
     setWorkoutDescription('');
     setSelectedDate(null);
   };
 
   const handleEventClick = (clickInfo) => {
+    if (isSubmitting || isDeleting) return;
     const workout = workouts.find(w => w._id === clickInfo.event.extendedProps._id);
-
     setSelectedEvent(clickInfo.event);
     setSelectedWorkout(workout);
     setShowEventModal(true);
   };
 
   const handleCloseEventModal = () => {
+    if (isSubmitting || isDeleting) return;
     setShowEventModal(false);
     setSelectedEvent(null);
     setSelectedWorkout(null);
@@ -74,6 +78,7 @@ export default function Home() {
   };
 
   const handleCloseDateModal = () => {
+    if (isSubmitting) return;
     setShowDateModal(false);
     setSelectedDate(null);
     setWorkoutTitle('');
@@ -82,13 +87,17 @@ export default function Home() {
   };
 
   const handleDateClick = (arg) => {
+    if (isSubmitting) return;
     setSelectedDate(arg.dateStr);
     setShowDateModal(true);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
     try {
+      setIsSubmitting(true);
       setError(null);
       const workout = {
         title: 'Quick Workout',
@@ -106,17 +115,22 @@ export default function Home() {
     } catch (error) {
       console.error('Failed to create workout:', error);
       setError('Failed to create workout. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleDateSubmit = async (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
     if (exercises.length === 0) {
       setError('Please add at least one exercise');
       return;
     }
 
     try {
+      setIsSubmitting(true);
       setError(null);
       const workoutData = {
         title: workoutTitle,
@@ -135,16 +149,16 @@ export default function Home() {
     } catch (error) {
       console.error('Failed to save workout:', error);
       setError('Failed to save workout. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleDeleteWorkout = async () => {
-    if (!selectedEvent || !selectedEvent.extendedProps._id) {
-      setError('Cannot delete this event');
-      return;
-    }
+    if (!selectedEvent || !selectedEvent.extendedProps._id || isDeleting || isSubmitting) return;
 
     try {
+      setIsDeleting(true);
       setError(null);
       await deleteWorkout(selectedEvent.extendedProps._id);
       await loadWorkouts();
@@ -152,10 +166,13 @@ export default function Home() {
     } catch (error) {
       console.error('Failed to delete workout:', error);
       setError('Failed to delete workout. Please try again.');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
   const handleEditWorkout = (workout) => {
+    if (isSubmitting || isDeleting) return;
     setWorkoutTitle(workout.title);
     setExercises(workout.exercises);
     setSelectedDate(workout.date);
@@ -165,6 +182,7 @@ export default function Home() {
   };
 
   const handleAddExercise = () => {
+    if (isSubmitting) return;
     setExercises([...exercises, {
       name: '',
       description: '',
@@ -174,10 +192,12 @@ export default function Home() {
   };
 
   const handleRemoveExercise = (index) => {
+    if (isSubmitting) return;
     setExercises(exercises.filter((_, i) => i !== index));
   };
 
   const handleExerciseChange = (index, field, value) => {
+    if (isSubmitting) return;
     const newExercises = [...exercises];
     newExercises[index] = {
       ...newExercises[index],
@@ -188,7 +208,10 @@ export default function Home() {
 
   const handleProfileSubmit = async (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
     try {
+      setIsSubmitting(true);
       setError(null);
       await updateUserProfile(profileData);
       Object.entries(profileData).forEach(([key, value]) => {
@@ -197,6 +220,8 @@ export default function Home() {
       setShowProfileModal(false);
     } catch (error) {
       setError('Failed to update profile. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -207,38 +232,39 @@ export default function Home() {
   }));
 
   const handleGenerateAndSave = async (e) => {
-  e.preventDefault();
-  setError(null);
-  setIsSubmitting(true);
+    e.preventDefault();
+    if (isSubmitting) return;
 
-  try {
-    // fall back to today if no date selected
-    const dateStr = selectedDate || todayStr;
+    setError(null);
+    setIsSubmitting(true);
 
-    // call the new backend route that runs Gemini + creates the workout
-    const created = await generateAndSaveWorkout(workoutDescription, dateStr);
-
-    // push it into state so calendar refreshes
-    setWorkouts(ws => [...ws, created]);
-    handleCloseModal();
-  } catch (err) {
-    console.error('Generate+Save error:', err);
-    setError('Failed to generate workout plan. Please try again.');
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+    try {
+      const dateStr = selectedDate || todayStr;
+      const created = await generateAndSaveWorkout(workoutDescription, dateStr);
+      setWorkouts(ws => [...ws, created]);
+      handleCloseModal();
+    } catch (err) {
+      console.error('Generate+Save error:', err);
+      setError('Failed to generate workout plan. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <>
-      <Header onProfileClick={() => setShowProfileModal(true)} />
+      <Header onProfileClick={() => !isSubmitting && setShowProfileModal(true)} />
       <div className="greeting-container">
         <div className="greeting-text">
           <h2 className="greeting">Welcome back, {name}!</h2>
           <p className="greeting-subtitle">Here's your personalized workout schedule</p>
         </div>
-        <button className="add-plan-button" onClick={handleAddPlan}>
-          Generate Plan
+        <button 
+          className="add-plan-button" 
+          onClick={handleAddPlan}
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? 'Generating...' : 'Generate Plan'}
         </button>
       </div>
       {error && (
@@ -259,6 +285,7 @@ export default function Home() {
         setWorkoutDescription={setWorkoutDescription}
         onSubmit={handleGenerateAndSave}
         error={error}
+        isSubmitting={isSubmitting}
       />
 
       <EventModal
@@ -268,6 +295,8 @@ export default function Home() {
         workout={selectedWorkout}
         onDelete={handleDeleteWorkout}
         onEdit={handleEditWorkout}
+        isSubmitting={isSubmitting}
+        isDeleting={isDeleting}
       />
 
       <DateModal
@@ -282,15 +311,17 @@ export default function Home() {
         onExerciseChange={handleExerciseChange}
         onSubmit={handleDateSubmit}
         error={error}
+        isSubmitting={isSubmitting}
       />
 
       <ProfileModal
         show={showProfileModal}
-        onClose={() => setShowProfileModal(false)}
+        onClose={() => !isSubmitting && setShowProfileModal(false)}
         profileData={profileData}
         setProfileData={setProfileData}
         onSubmit={handleProfileSubmit}
         error={error}
+        isSubmitting={isSubmitting}
       />
     </>
   );
