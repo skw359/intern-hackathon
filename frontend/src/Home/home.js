@@ -28,10 +28,10 @@ export default function Home() {
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({
-    weight: localStorage.getItem('weight') || '',
-    age: localStorage.getItem('age') || '',
-    gender: localStorage.getItem('gender') || '',
-    experience: localStorage.getItem('experience') || ''
+    weight: '',
+    age: '',
+    gender: '',
+    experience: ''
   });
 
   useEffect(() => {
@@ -45,7 +45,7 @@ export default function Home() {
       setWorkouts(data);
     } catch (error) {
       console.error('Failed to load workouts:', error);
-      setError('Failed to load workouts. Please check if the server is running and try again.');
+      setError('Failed to load workouts. Please try again.');
     }
   };
 
@@ -90,34 +90,6 @@ export default function Home() {
     if (isSubmitting) return;
     setSelectedDate(arg.dateStr);
     setShowDateModal(true);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (isSubmitting) return;
-
-    try {
-      setIsSubmitting(true);
-      setError(null);
-      const workout = {
-        title: 'Quick Workout',
-        date: selectedDate || new Date().toISOString().split('T')[0],
-        exercises: [{
-          name: 'Exercise',
-          description: workoutDescription,
-          sets: 1,
-          reps: 1
-        }]
-      };
-      await createWorkout(workout);
-      await loadWorkouts();
-      handleCloseModal();
-    } catch (error) {
-      console.error('Failed to create workout:', error);
-      setError('Failed to create workout. Please try again.');
-    } finally {
-      setIsSubmitting(false);
-    }
   };
 
   const handleDateSubmit = async (e) => {
@@ -312,6 +284,7 @@ export default function Home() {
         onSubmit={handleDateSubmit}
         error={error}
         isSubmitting={isSubmitting}
+        isEditing={isEditing}
       />
 
       <ProfileModal

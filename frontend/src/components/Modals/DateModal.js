@@ -9,8 +9,8 @@ export default function DateModal({
   setWorkoutTitle, 
   exercises, 
   onExerciseAdd, 
-  onExerciseRemove, 
   onExerciseChange, 
+  onExerciseRemove, 
   onSubmit, 
   error,
   isSubmitting,
@@ -18,11 +18,18 @@ export default function DateModal({
 }) {
   if (!show || !date) return null;
 
+  const formattedDate = new Date(date).toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+
   return (
     <div className="modal-overlay">
       <div className="modal">
         <div className="modal-header">
-          <h3 className="modal-title">{isEditing ? 'Edit Workout' : 'Add Workout'}</h3>
+          <h3 className="modal-title">{isEditing ? 'Update Workout' : 'Add Workout'} for {formattedDate}</h3>
           <button 
             className="close-button" 
             onClick={onClose} 
