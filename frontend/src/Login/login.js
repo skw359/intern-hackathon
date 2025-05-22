@@ -35,28 +35,44 @@ export default function Login() {
       <form className="login-form" onSubmit={handleSubmit}>
         {error && <div className="error-message">{error}</div>}
         }
-        <label>Email</label>
-        <input
-          type="email"
-          placeholder="Value"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
+        <div className="form-group">
+          <label htmlFor="email">Email</label>
+          <input
+            id="email"
+            type="email"
+            placeholder="Enter your email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            disabled={isSubmitting}
+            className="login-input"
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="password">Password</label>
+          <input
+            id="password"
+            type="password"
+            placeholder="Enter your password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            disabled={isSubmitting}
+            className="login-input"
+          />
+        </div>
+        <button 
+          type="submit" 
           disabled={isSubmitting}
-        />
-        <label>Password</label>
-        <input
-          type="password"
-          placeholder="Value"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          disabled={isSubmitting}
-        />
-        <button type="submit" disabled={isSubmitting}>
+          className="login-button"
+        >
           {isSubmitting ? 'Signing in...' : 'Sign In'}
         </button>
-        <Link to="/register" className="forgot-link" tabIndex={isSubmitting ? -1 : 0}>
+        <Link 
+          to="/register" 
+          className="register-link" 
+          tabIndex={isSubmitting ? -1 : 0}
+        >
           Don't have an account? Register
         </Link>
       </form>
