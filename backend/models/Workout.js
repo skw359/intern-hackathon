@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { Schema } = require('mongoose');
 
 /**
  * Exercise Schema
@@ -11,11 +12,11 @@ const exerciseSchema = new mongoose.Schema({
   },
   description: String,
   sets: {
-    type: Number,
+    type: Schema.Types.Mixed,
     required: true
   },
   reps: {
-    type: Number,
+    type: Schema.Types.Mixed,
     required: true
   }
 });

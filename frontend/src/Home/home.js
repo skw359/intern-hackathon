@@ -252,7 +252,8 @@ export default function Home() {
 
     try {
       const dateStr = selectedDate || todayStr;
-      const created = await generateAndSaveWorkout(workoutDescription, dateStr);
+      const { weight, age, gender, experience } = profileData;
+      const created = await generateAndSaveWorkout(workoutDescription, dateStr, { weight, age, gender, experience });
       setWorkouts(ws => [...ws, created]);
       handleCloseModal();
     } catch (err) {

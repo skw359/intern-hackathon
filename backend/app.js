@@ -306,12 +306,17 @@ app.delete('/api/workouts/:id', authMiddleware, async (req, res) => {
  */
 app.post('/api/generateWorkout', authMiddleware, async (req, res, next) => {
   try {
-    const { description, date } = req.body;
+    const { description, date, profile } = req.body;
+    const { weight, age, gender, experience } = profile || {};
     const dateStr = date || new Date().toISOString().slice(0,10);
+    const userIntro = 
+     `The user is a ${age}-year-old ${gender}, weighing ${weight} kg, ` +
+     `${experience} level fitness.`;
 
     // Build the schema-prompt for AI generation
     const prompt = `
-Generate a single-day workout plan and return it only as valid JSON in exactly this shape:
+${userIntro}
+Generate a single-day workout plan and return it **only** as valid JSON**—no markdown, no code fences**, exactly in this shape, with each exercise on one line:
 
 {
   "title": "<short name of workout>",
@@ -326,7 +331,15 @@ Generate a single-day workout plan and return it only as valid JSON in exactly t
   ]
 }
 
-Do not output any extra text or markdown—only the JSON object.
+Rules:
+• Do **not** restate sets or reps in the description.  
+• If reps is not a pure integer, it **must** be in double-quotes (e.g. "as many as possible").  
+• No extra fields, no markdown, no fences—output **only** the JSON object.
+- **Beginner**: 40–50% body weight for compound, 20–30% for isolation
+- **Intermediate**: 60–70% compound, 30–40% isolation  
+- **Advanced**: 80–90% compound, 40–50% isolation  
+- Include the weight in the brief description, if applicable.
+
 
 WORKOUT NAME: "${description}"
 DATE: "${dateStr}"
@@ -345,6 +358,8 @@ DATE: "${dateStr}"
     if (!m) throw new Error('No JSON object found in response');
     const jsonString = m[0];
     const planObj = JSON.parse(jsonString);
+    console.log(prompt)
+    console.log(planObj)
 
     // Create new workout from AI generation
     const newWorkout = await Workout.create({
