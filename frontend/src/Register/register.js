@@ -23,12 +23,8 @@ export default function Register() {
 
     try {
       setIsSubmitting(true)
-      const data = await register(name, email, password)
-      localStorage.setItem('token', data.token)
-      localStorage.setItem('userId', data.userId)
-      localStorage.setItem('name', data.name)
-      localStorage.setItem('hasCompletedSurvey', 'false')
-      navigate('/survey')
+      await register(name, email, password)
+      navigate('/')
     } catch (err) {
       setError(err.message || 'Registration failed')
     } finally {
