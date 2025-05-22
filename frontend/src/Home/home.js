@@ -201,7 +201,7 @@ export default function Home() {
       name: '',
       description: '',
       sets: 1,
-      reps: 1
+      reps: ''
     }]);
   };
 
@@ -236,11 +236,11 @@ export default function Home() {
     }
   };
 
-  const calendarEvents = workouts.map(workout => ({
-    title: workout.title || 'Workout',
-    date: workout.date.split('T')[0],
-    _id: workout._id
-  }));
+  const calendarEvents = workouts.map(w => ({
+  title:  w.title  || 'Workout',
+  date:   w.date?.split('T')[0] || '1970-01-01',
+  _id:    w._id
+}));
 
   const handleGenerateAndSave = async (e) => {
     e.preventDefault();

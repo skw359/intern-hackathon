@@ -23,7 +23,7 @@ async function generateWithGemini(promptText) {
       }],
       generationConfig: {
         temperature: 0.7,
-        maxOutputTokens: 512
+        maxOutputTokens: 8192
       }
     });
 
@@ -32,8 +32,8 @@ async function generateWithGemini(promptText) {
     console.log('💡 Raw Gemini response:', candidate.content);   
 
     // Extract and return generated text
-    const response = result.response;
-    return response.text();
+    const fullText = candidate.content.parts.map(p => p.text).join('');
+    return fullText;
   } catch (error) {
     console.error('Error generating content with Gemini:', error);
     if (error.response) {

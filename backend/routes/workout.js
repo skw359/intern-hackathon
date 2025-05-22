@@ -4,21 +4,49 @@ const router = express.Router();
 const Workout = require('../models/Workout');
 const { generateWithGemini } = require('../services/gemini');
 
-// Simple parser: expects Gemini to return lines like "Push-up – 3 x 12, rest 60s"
-function parseGeminiOutput(text) {
-  return text
-    .split('\n')
-    .map(line => {
-      const match = line.match(/(.+?)\s*–\s*(\d+)\s*x\s*(\d+),\s*rest\s*(\d+)s/);
-      if (!match) return null;
-      return {
-        name:        match[1].trim(),
-        sets:        parseInt(match[2], 10),
-        reps:        parseInt(match[3], 10),
-        restSeconds: parseInt(match[4], 10)
-      };
-    })
-    .filter(Boolean);
+function parseGeminiOutput(raw) {
+  // unwrap wrapper if needed
+  if (typeof raw !== 'string' && raw.parts) {
+    raw = raw.parts.map(p => p.text).join('');
+  }
+
+  // strip fences
+  let txt = raw
+    .trim()
+    .replace(/^```(?:json)?\s*/gm, '')
+    .replace(/\s*```$/gm, '');
+
+  // extract the full array
+  let jsonArray = extractJsonArray(txt);
+
+  // remove trailing commas
+  jsonArray = jsonArray
+    .replace(/,\s*]/g, ']')
+    .replace(/,\s*}/g, '}');
+
+  // finally parse
+  try {
+    return JSON.parse(jsonArray);
+  } catch (err) {
+    console.error("Failed JSON:\n", jsonArray);
+    throw err;
+  }
+}
+
+function extractJsonArray(txt) {
+  const start = txt.indexOf('[');
+  if (start < 0) throw new Error("No '[' found in AI response");
+  let depth = 0;
+  for (let i = start; i < txt.length; i++) {
+    if (txt[i] === '[') depth++;
+    else if (txt[i] === ']') {
+      depth--;
+      if (depth === 0) {
+        return txt.slice(start, i + 1);
+      }
+    }
+  }
+  throw new Error("Unbalanced brackets in AI response");
 }
 
 // POST /api/workouts/:id/generate
@@ -30,6 +58,7 @@ router.post('/:id/generate', async (req, res, next) => {
 
     // 2) Parse into your schema format
     const plan = parseGeminiOutput(aiText);
+    console.log(plan);
 
     // 3) Save back to Mongo
     const workout = await Workout.findByIdAndUpdate(
@@ -44,4 +73,4 @@ router.post('/:id/generate', async (req, res, next) => {
   }
 });
 
-module.exports = router;
+module.exports = { router, parseGeminiOutput };

@@ -8,6 +8,7 @@ const jwt = require('jsonwebtoken');
 const authMiddleware = require('./middleware/auth');
 const workoutRoutes = require('./routes/workout');
 const { generateWithGemini } = require('./services/gemini');
+const { parseGeminiOutput } = require('./routes/workout');
 require('dotenv').config();
 
 /**
@@ -319,61 +320,75 @@ app.post('/api/generateWorkout', authMiddleware, async (req, res, next) => {
 
     // Build the schema-prompt for AI generation
     const prompt = `
-${userIntro}
-Generate a single-day workout plan and return it **only** as valid JSON**—no markdown, no code fences**, exactly in this shape, with each exercise on one line:
+Today is ${date}. The user is a ${age}-year-old ${gender}, weighing ${weight} lb, ${experience} level fitness. User request:
 
-{
-  "title": "<short name of workout>",
-  "date": "<YYYY-MM-DD>",
-  "exercises": [
-    {
-      "name": "<exercise name>",
-      "description": "<brief description>",
-      "sets": <number>,
-      "reps": <number>
-    }
-  ]
-}
+${description}
+
+Generate a workout plan and return an array of workouts exactly in this structure:
+
+[
+  {
+    "title": "<short name of workout>",
+    "date": "<YYYY-MM-DD>",
+    "exercises": [
+      {
+        "name": "<exercise name>",
+        "description": "<detailed description with recommended weight>",
+        "sets": <number>,
+        "reps": <number or string>
+      }
+    ]
+  },
+  {
+    "title": "<short name of workout>",
+    "date": "<YYYY-MM-DD>",
+    "exercises": [
+      {
+        "name": "<exercise name>",
+        "description": "<detailed description with recommended weight>",
+        "sets": <number>,
+        "reps": <number or string>
+      }
+    ]
+  }
+]
 
 Rules:
-• Do **not** restate sets or reps in the description. Also, add to the description the specific muscle that's being hit in these exercises if applicable.
-• If reps is not a pure integer, it **must** be in double-quotes (e.g. "as many as possible").  
-• No extra fields, no markdown, no fences—output **only** the JSON object.
-- **Beginner**: 40–50% body weight for compound, 20–30% for isolation
+- The number of workout objects (length of the array) should match the user request.
+- If the user does not specify a date or date range, then default to a single workout on ${date}.
+- Do **not** restate sets or reps in the description.
+- You are a JSON outputter output. **Only** output plain valid JSON string
+- No extra fields, no markdown, no code fences, no code backticks
+- Include to the description the specific muscle that's being hit in the exercises if applicable.
+- Include the weight in pounds in the brief description, if applicable.
+- If a day (e.g. rest day) contains no exercises, do not include it.
+- If a day (e.g. rest day) contains no exercises, skip that workout entry in the JSON array.
+- If reps is not a pure integer, it **must** be in double-quotes (e.g. "as many as possible").
+- **Beginner**: 40–50% body weight for compound, 20–30% for isolation 
 - **Intermediate**: 60–70% compound, 30–40% isolation  
 - **Advanced**: 80–90% compound, 40–50% isolation  
-- Include the weight in pounds in the brief description, if applicable.
 
-
-WORKOUT NAME: "${description}"
-DATE: "${dateStr}"
 `;
 
     // Generate workout using AI
     let raw = await generateWithGemini(prompt);
+    const planArray = parseGeminiOutput(raw);
 
-    // Clean up AI response
-    raw = raw.trim()
-      .replace(/^```(?:json)?\s*/, '')
-      .replace(/\s*```$/, '');
-
-    // Extract and parse JSON
-    const m = raw.match(/\{[\s\S]*\}/);
-    if (!m) throw new Error('No JSON object found in response');
-    const jsonString = m[0];
-    const planObj = JSON.parse(jsonString);
     console.log(prompt)
-    console.log(planObj)
+    console.log(planArray)
 
-    // Create new workout from AI generation
-    const newWorkout = await Workout.create({
-      userId: req.user.userId,
-      title: planObj.title,
-      date: planObj.date,
-      exercises: planObj.exercises
-    });
+     const created = await Promise.all(
+      planArray.map(w =>
+        Workout.create({
+          userId:   req.user.userId,
+          title:    w.title,
+          date:     w.date,
+          exercises:w.exercises
+        })
+      )
+    );
 
-    res.status(201).json(newWorkout);
+    res.status(201).json(created);
   } catch (err) {
     console.error('Generate+Create error:', err);
     next(err);
