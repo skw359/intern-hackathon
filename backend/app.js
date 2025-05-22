@@ -81,11 +81,11 @@ app.post('/api/auth/login', async (req, res) => {
 
 /**
  * Get user profile endpoint
- * @route GET /api/me
+ * @route GET /api/profile
  * @middleware authMiddleware - Verifies JWT token
  * @returns {object} User profile data
  */
-app.get('/api/me', authMiddleware, async (req, res) => {
+app.get('/api/profile', authMiddleware, async (req, res) => {
   try {
     const user = await User.findById(req.user.userId).select('name email weight age gender experience');
     if (!user) {
@@ -107,11 +107,11 @@ app.get('/api/me', authMiddleware, async (req, res) => {
 
 /**
  * Update user profile endpoint
- * @route PUT /api/me
+ * @route PUT /api/profile
  * @middleware authMiddleware - Verifies JWT token
  * @returns {object} Updated user profile data
  */
-app.put('/api/me', authMiddleware, async (req, res) => {
+app.put('/api/profile', authMiddleware, async (req, res) => {
   try {
     const { weight, age, gender, experience } = req.body;
     const user = await User.findById(req.user.userId);

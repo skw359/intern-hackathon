@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://b5lmq7hc-3001.use.devtunnels.ms/api',
+  baseURL: '/api',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json'
@@ -60,34 +60,30 @@ export const register = async (name, email, password) => {
   }
 };
 
+// Get user profile
 export const getUserProfile = async () => {
   try {
-    const response = await api.get('/me');
-    const { weight, age, gender, experience } = response.data;
-    
-    // Update localStorage with latest profile data
-    if (weight) localStorage.setItem('weight', weight);
-    if (age) localStorage.setItem('age', age);
-    if (gender) localStorage.setItem('gender', gender);
-    if (experience) localStorage.setItem('experience', experience);
-    
+    const token = localStorage.getItem('token');
+    const response = await api.get('/profile', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
     return response.data;
   } catch (error) {
     throw new Error(`Failed to fetch profile: ${error.response?.data?.message || error.message}`);
   }
 };
 
+// Update user profile
 export const updateUserProfile = async (profileData) => {
   try {
-    const response = await api.put('/me', profileData);
-    const { weight, age, gender, experience } = response.data;
-    
-    // Update localStorage with new profile data
-    if (weight) localStorage.setItem('weight', weight);
-    if (age) localStorage.setItem('age', age);
-    if (gender) localStorage.setItem('gender', gender);
-    if (experience) localStorage.setItem('experience', experience);
-    
+    const token = localStorage.getItem('token');
+    const response = await api.put('/profile', profileData, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
     return response.data;
   } catch (error) {
     throw new Error(`Failed to update profile: ${error.response?.data?.message || error.message}`);
