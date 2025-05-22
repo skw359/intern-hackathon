@@ -318,9 +318,7 @@ export default function Home() {
         workoutTitle={workoutTitle}
         setWorkoutTitle={setWorkoutTitle}
         exercises={exercises}
-        onExerciseAdd={handle
-
-AddExercise}
+        onExerciseAdd={handleAddExercise}
         onExerciseRemove={handleRemoveExercise}
         onExerciseChange={handleExerciseChange}
         onSubmit={handleDateSubmit}
