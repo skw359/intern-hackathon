@@ -311,16 +311,14 @@ app.delete('/api/workouts/:id', authMiddleware, async (req, res) => {
  */
 app.post('/api/generateWorkout', authMiddleware, async (req, res, next) => {
   try {
-    const { description, date, profile } = req.body;
+    const { description, dayOfWeek, date, profile } = req.body;
     const { weight, age, gender, experience } = profile || {};
     const dateStr = date || new Date().toISOString().slice(0,10);
-    const userIntro = 
-     `The user is a ${age}-year-old ${gender}, weighing ${weight} lb, ` +
-     `${experience} level fitness.`;
+    console.log(`${dayOfWeek} ${date} ${description}`);
 
     // Build the schema-prompt for AI generation
     const prompt = `
-Today is ${date}. The user is a ${age}-year-old ${gender}, weighing ${weight} lb, ${experience} level fitness. User request:
+Today is ${dayOfWeek} ${date}. The user is a ${age}-year-old ${gender}, weighing ${weight} lb, ${experience} level fitness. User request:
 
 ${description}
 
