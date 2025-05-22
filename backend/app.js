@@ -377,18 +377,36 @@ Rules:
     console.log(prompt)
     console.log(planArray)
 
-     const created = await Promise.all(
-      planArray.map(w =>
-        Workout.create({
-          userId:   req.user.userId,
-          title:    w.title,
-          date:     w.date,
-          exercises:w.exercises
-        })
-      )
-    );
+    //  const created = await Promise.all(
+    //   planArray.map(w =>
+    //     Workout.create({
+    //       userId:   req.user.userId,
+    //       title:    w.title,
+    //       date:     w.date,
+    //       exercises:w.exercises
+    //     })
+    //   )
+    // );
 
-    res.status(201).json(created);
+    // Save each workout to MongoDB
+    const createdWorkouts = [];
+    for (const workout of planArray) {
+      const { title, date, exercises } = workout;
+      if (!title || !date || !Array.isArray(exercises) || exercises.length === 0) continue;
+
+      const newWorkout = new Workout({
+        userId: req.user.userId,
+        title,
+        date,
+        exercises,
+      });
+
+      await newWorkout.save();
+      createdWorkouts.push(newWorkout);
+    }
+
+
+    res.status(201).json(createdWorkouts);
   } catch (err) {
     console.error('Generate+Create error:', err);
     next(err);
