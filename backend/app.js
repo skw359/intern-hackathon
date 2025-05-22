@@ -336,7 +336,7 @@ Generate a single-day workout plan and return it **only** as valid JSON**—no m
 }
 
 Rules:
-• Do **not** restate sets or reps in the description.  
+• Do **not** restate sets or reps in the description. Also, add to the description the specific muscle that's being hit in these exercises if applicable.
 • If reps is not a pure integer, it **must** be in double-quotes (e.g. "as many as possible").  
 • No extra fields, no markdown, no fences—output **only** the JSON object.
 - **Beginner**: 40–50% body weight for compound, 20–30% for isolation
