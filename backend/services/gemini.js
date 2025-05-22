@@ -3,6 +3,8 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 // Initialize Gemini AI with API key
 const genAI = new GoogleGenerativeAI(process.env.GENERATIVE_API_KEY);
+// Initialize Gemini model
+const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
 /**
  * Generate workout content using Google's Gemini AI
@@ -12,9 +14,6 @@ const genAI = new GoogleGenerativeAI(process.env.GENERATIVE_API_KEY);
  */
 async function generateWithGemini(promptText) {
   try {
-    // Initialize Gemini model
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-
     // Generate content with specified parameters
     const result = await model.generateContent({
       contents: [{ 
@@ -28,12 +27,19 @@ async function generateWithGemini(promptText) {
     });
 
     // Log raw response for debugging
-    const candidate = result.response.candidates[0];
-    console.log('💡 Raw Gemini response:', candidate.content);   
+    console.dir(result, { depth: null });
 
-    // Extract and return generated text
-    const fullText = candidate.content.parts.map(p => p.text).join('');
-    return fullText;
+    const text = result.response.candidates[0].content.parts[0].text;
+
+    // Remove all backtick code blocks, including ones with optional language labels and whitespace
+    const cleaned = text
+    .replace(/^\s*```(?:json)?\s*/i, '')  // opening ```json or ```
+    .replace(/\s*```\s*$/, '')            // closing ```
+    .trim();
+
+    const json = JSON.parse(cleaned);
+
+    return json;
   } catch (error) {
     console.error('Error generating content with Gemini:', error);
     if (error.response) {

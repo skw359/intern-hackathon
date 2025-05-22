@@ -333,7 +333,7 @@ Generate a workout plan and return an array of workouts exactly in this structur
     "exercises": [
       {
         "name": "<exercise name>",
-        "description": "<detailed description with recommended weight>",
+        "description": "<detailed description>",
         "sets": <number>,
         "reps": <number or string>
       }
@@ -345,7 +345,7 @@ Generate a workout plan and return an array of workouts exactly in this structur
     "exercises": [
       {
         "name": "<exercise name>",
-        "description": "<detailed description with recommended weight>",
+        "description": "<detailed description>",
         "sets": <number>,
         "reps": <number or string>
       }
@@ -360,8 +360,7 @@ Rules:
 - You are a JSON outputter output. **Only** output plain valid JSON string
 - No extra fields, no markdown, no code fences, no code backticks
 - Include to the description the specific muscle that's being hit in the exercises if applicable.
-- Include the weight in pounds in the brief description, if applicable.
-- If a day (e.g. rest day) contains no exercises, do not include it.
+- Include the weight in pounds in the detailed description, if applicable.
 - If a day (e.g. rest day) contains no exercises, skip that workout entry in the JSON array.
 - If reps is not a pure integer, it **must** be in double-quotes (e.g. "as many as possible").
 - **Beginner**: 40–50% body weight for compound, 20–30% for isolation 
@@ -371,26 +370,11 @@ Rules:
 `;
 
     // Generate workout using AI
-    let raw = await generateWithGemini(prompt);
-    const planArray = parseGeminiOutput(raw);
-
-    console.log(prompt)
-    console.log(planArray)
-
-    //  const created = await Promise.all(
-    //   planArray.map(w =>
-    //     Workout.create({
-    //       userId:   req.user.userId,
-    //       title:    w.title,
-    //       date:     w.date,
-    //       exercises:w.exercises
-    //     })
-    //   )
-    // );
+    let workouts = await generateWithGemini(prompt);
 
     // Save each workout to MongoDB
     const createdWorkouts = [];
-    for (const workout of planArray) {
+    for (const workout of workouts) {
       const { title, date, exercises } = workout;
       if (!title || !date || !Array.isArray(exercises) || exercises.length === 0) continue;
 
@@ -404,7 +388,6 @@ Rules:
       await newWorkout.save();
       createdWorkouts.push(newWorkout);
     }
-
 
     res.status(201).json(createdWorkouts);
   } catch (err) {
