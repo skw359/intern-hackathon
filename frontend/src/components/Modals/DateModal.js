@@ -12,7 +12,9 @@ export default function DateModal({
   onExerciseRemove, 
   onExerciseChange, 
   onSubmit, 
-  error 
+  error,
+  isSubmitting,
+  isEditing 
 }) {
   if (!show || !date) return null;
 
@@ -20,12 +22,17 @@ export default function DateModal({
     <div className="modal-overlay">
       <div className="modal">
         <div className="modal-header">
-          <h3 className="modal-title">Add Workout for {date}</h3>
-          <button className="close-button" onClick={onClose}>&times;</button>
+          <h3 className="modal-title">{isEditing ? 'Edit Workout' : 'Add Workout'}</h3>
+          <button 
+            className="close-button" 
+            onClick={onClose} 
+            disabled={isSubmitting}
+          >
+            &times;
+          </button>
         </div>
         <form className="modal-form" onSubmit={onSubmit}>
           {error && <div className="error-message">{error}</div>}
-          }
           <div className="form-group">
             <label htmlFor="workoutTitle">Workout Title</label>
             <input
@@ -36,6 +43,7 @@ export default function DateModal({
               required
               className="workout-input"
               placeholder="Enter workout title"
+              disabled={isSubmitting}
             />
           </div>
           
@@ -49,6 +57,7 @@ export default function DateModal({
                     type="button"
                     className="remove-exercise-button"
                     onClick={() => onExerciseRemove(index)}
+                    disabled={isSubmitting}
                   >
                     Remove
                   </button>
@@ -63,6 +72,7 @@ export default function DateModal({
                       required
                       className="workout-input"
                       placeholder="Enter exercise name"
+                      disabled={isSubmitting}
                     />
                   </div>
                   <div className="form-group">
@@ -73,6 +83,7 @@ export default function DateModal({
                       required
                       className="workout-textarea"
                       placeholder="Enter exercise description"
+                      disabled={isSubmitting}
                     />
                   </div>
                   <div className="exercise-numbers">
@@ -85,6 +96,7 @@ export default function DateModal({
                         onChange={(e) => onExerciseChange(index, 'sets', e.target.value)}
                         required
                         className="workout-input"
+                        disabled={isSubmitting}
                       />
                     </div>
                     <div className="form-group">
@@ -96,6 +108,7 @@ export default function DateModal({
                         onChange={(e) => onExerciseChange(index, 'reps', e.target.value)}
                         required
                         className="workout-input"
+                        disabled={isSubmitting}
                       />
                     </div>
                   </div>
@@ -106,6 +119,7 @@ export default function DateModal({
               type="button"
               className="add-exercise-button"
               onClick={onExerciseAdd}
+              disabled={isSubmitting}
             >
               Add Exercise
             </button>
@@ -113,13 +127,22 @@ export default function DateModal({
 
           <div className="form-actions">
             <div className="button-group">
-              <button type="button" className="cancel-button" onClick={onClose}>Cancel</button>
+              <button 
+                type="button" 
+                className="cancel-button" 
+                onClick={onClose}
+                disabled={isSubmitting}
+              >
+                Cancel
+              </button>
               <button
                 type="submit"
                 className="submit-button"
-                disabled={exercises.length === 0}
+                disabled={exercises.length === 0 || isSubmitting}
               >
-                Add Workout
+                {isSubmitting 
+                  ? (isEditing ? 'Updating...' : 'Adding...') 
+                  : (isEditing ? 'Update Workout' : 'Add Workout')}
               </button>
             </div>
           </div>

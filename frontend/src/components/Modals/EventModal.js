@@ -1,7 +1,16 @@
 import React from 'react';
 import './Modals.css';
 
-export default function EventModal({ show, onClose, event, workout, onDelete, onEdit }) {
+export default function EventModal({ 
+  show, 
+  onClose, 
+  event, 
+  workout, 
+  onDelete, 
+  onEdit,
+  isSubmitting,
+  isDeleting 
+}) {
   if (!show || !event || !workout) return null;
 
   return (
@@ -9,7 +18,13 @@ export default function EventModal({ show, onClose, event, workout, onDelete, on
       <div className="modal">
         <div className="modal-header">
           <h3 className="modal-title">Workout Details</h3>
-          <button className="close-button" onClick={onClose}>&times;</button>
+          <button 
+            className="close-button" 
+            onClick={onClose}
+            disabled={isSubmitting || isDeleting}
+          >
+            &times;
+          </button>
         </div>
         <div className="modal-content">
           <p><strong>Date:</strong> {event.startStr}</p>
@@ -28,10 +43,28 @@ export default function EventModal({ show, onClose, event, workout, onDelete, on
         </div>
         <div className="modal-footer">
           <div className="button-group">
-            <button className="cancel-button" onClick={onClose}>Close</button>
-            <button className="edit-button" onClick={() => onEdit(workout)}>Edit</button>
+            <button 
+              className="cancel-button" 
+              onClick={onClose}
+              disabled={isSubmitting || isDeleting}
+            >
+              Close
+            </button>
+            <button 
+              className="edit-button" 
+              onClick={() => onEdit(workout)}
+              disabled={isSubmitting || isDeleting}
+            >
+              Edit
+            </button>
             {event.extendedProps._id && (
-              <button className="delete-button" onClick={onDelete}>Delete</button>
+              <button 
+                className="delete-button" 
+                onClick={onDelete}
+                disabled={isSubmitting || isDeleting}
+              >
+                {isDeleting ? 'Deleting...' : 'Delete'}
+              </button>
             )}
           </div>
         </div>

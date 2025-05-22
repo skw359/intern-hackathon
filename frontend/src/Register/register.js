@@ -9,10 +9,12 @@ export default function Register() {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    if (isSubmitting) return
     
     if (password !== confirmPassword) {
       setError('Passwords do not match')
@@ -20,6 +22,7 @@ export default function Register() {
     }
 
     try {
+      setIsSubmitting(true)
       const data = await register(name, email, password)
       localStorage.setItem('token', data.token)
       localStorage.setItem('userId', data.userId)
@@ -28,6 +31,8 @@ export default function Register() {
       navigate('/survey')
     } catch (err) {
       setError(err.message || 'Registration failed')
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -44,6 +49,7 @@ export default function Register() {
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
+          disabled={isSubmitting}
         />
         <label>Email</label>
         <input
@@ -52,6 +58,7 @@ export default function Register() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
+          disabled={isSubmitting}
         />
         <label>Password</label>
         <input
@@ -60,6 +67,7 @@ export default function Register() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
+          disabled={isSubmitting}
         />
         <label>Confirm Password</label>
         <input
@@ -68,9 +76,14 @@ export default function Register() {
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
           required
+          disabled={isSubmitting}
         />
-        <button type="submit">Register</button>
-        <Link to="/" className="login-link">Already have an account? Sign in</Link>
+        <button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? 'Registering...' : 'Register'}
+        </button>
+        <Link to="/" className="login-link" tabIndex={isSubmitting ? -1 : 0}>
+          Already have an account? Sign in
+        </Link>
       </form>
     </div>
   )

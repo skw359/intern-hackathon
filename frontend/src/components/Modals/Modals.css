@@ -50,8 +50,13 @@
   transition: color 0.2s ease;
 }
 
-.close-button:hover {
+.close-button:hover:not(:disabled) {
   color: #111827;
+}
+
+.close-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 .modal-content {
@@ -105,6 +110,13 @@
   background-color: #ffffff;
 }
 
+.workout-input:disabled,
+.workout-textarea:disabled {
+  background-color: #f3f4f6;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
 .workout-textarea {
   min-height: 100px;
   resize: vertical;
@@ -112,8 +124,8 @@
   line-height: 1.6;
 }
 
-.workout-input:focus,
-.workout-textarea:focus {
+.workout-input:focus:not(:disabled),
+.workout-textarea:focus:not(:disabled) {
   outline: none;
   border-color: #1a1a1a;
   box-shadow: 0 0 0 2px rgba(26, 26, 26, 0.1);
@@ -139,6 +151,45 @@
   width: 100%;
 }
 
+.button {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.button:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.button::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.5);
+  opacity: 0;
+  border-radius: 100%;
+  transform: scale(1, 1) translate(-50%);
+  transform-origin: 50% 50%;
+}
+
+.button:active::after {
+  animation: ripple 0.6s ease-out;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0, 0);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(20, 20);
+    opacity: 0;
+  }
+}
+
 .submit-button,
 .cancel-button,
 .delete-button,
@@ -149,7 +200,25 @@
   font-weight: 500;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.submit-button:disabled,
+.cancel-button:disabled,
+.delete-button:disabled,
+.edit-button:disabled,
+.add-exercise-button:disabled,
+.remove-exercise-button:disabled,
+.close-button:disabled,
+.profile-button:disabled,
+.logout-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+  transform: none !important;
+  background-color: #9ca3af !important;
+  border-color: #9ca3af !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
 }
 
 .submit-button {
@@ -165,18 +234,13 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.submit-button:disabled {
-  background-color: #9ca3af;
-  cursor: not-allowed;
-}
-
 .cancel-button {
   background-color: white;
   color: #1a1a1a;
   border: 2px solid #1a1a1a;
 }
 
-.cancel-button:hover {
+.cancel-button:hover:not(:disabled) {
   background-color: #f9fafb;
   transform: translateY(-1px);
 }
@@ -188,7 +252,7 @@
   box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
 }
 
-.delete-button:hover {
+.delete-button:hover:not(:disabled) {
   background-color: #dc2626;
   transform: translateY(-1px);
   box-shadow: 0 4px 6px rgba(239, 68, 68, 0.2);
@@ -201,7 +265,7 @@
   box-shadow: 0 2px 4px rgba(5, 150, 105, 0.2);
 }
 
-.edit-button:hover {
+.edit-button:hover:not(:disabled) {
   background-color: #047857;
   transform: translateY(-1px);
   box-shadow: 0 4px 6px rgba(5, 150, 105, 0.2);
@@ -251,9 +315,14 @@
   transition: all 0.2s ease;
 }
 
-.remove-exercise-button:hover {
+.remove-exercise-button:hover:not(:disabled) {
   background-color: #dc2626;
   transform: translateY(-1px);
+}
+
+.remove-exercise-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .exercise-fields {
@@ -285,10 +354,15 @@
   box-shadow: 0 2px 4px rgba(5, 150, 105, 0.2);
 }
 
-.add-exercise-button:hover {
+.add-exercise-button:hover:not(:disabled) {
   background-color: #047857;
   transform: translateY(-1px);
   box-shadow: 0 4px 6px rgba(5, 150, 105, 0.2);
+}
+
+.add-exercise-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .exercises-list {
