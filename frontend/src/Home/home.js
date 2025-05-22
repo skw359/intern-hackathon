@@ -13,7 +13,6 @@ export default function Home() {
   const todayStr = today.toISOString().slice(0, 10); // "YYYY-MM-DD"
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [name, setName] = useState(localStorage.getItem('name') || 'User');
   const [showModal, setShowModal] = useState(false);
   const [showEventModal, setShowEventModal] = useState(false);
   const [showDateModal, setShowDateModal] = useState(false);
@@ -38,16 +37,13 @@ export default function Home() {
     try {
       const data = await getUserProfile();
       setProfileData({
+        name: data.name || 'User',
         weight: data.weight || '',
         age: data.age || '',
         gender: data.gender || '',
         experience: data.experience || '',
         completedProfile: data.completedProfile || ''
       });
-      if (data.name) {
-        setName(data.name);
-        localStorage.setItem('name', data.name);
-      }
       if (!data.completedProfile) {
         setShowProfileModal(true);
       }
@@ -272,7 +268,7 @@ export default function Home() {
       <Header onProfileClick={() => !isSubmitting && setShowProfileModal(true)} />
       <div className="greeting-container">
         <div className="greeting-text">
-          <h2 className="greeting">Welcome back, {name}!</h2>
+          <h2 className="greeting">Welcome back, {profileData?.name || 'User'}!</h2>
           <p className="greeting-subtitle">Here's your personalized workout schedule</p>
         </div>
         <button 

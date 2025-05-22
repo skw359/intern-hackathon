@@ -87,7 +87,7 @@ app.post('/api/auth/login', async (req, res) => {
  */
 app.get('/api/profile', authMiddleware, async (req, res) => {
   try {
-    const user = await User.findById(req.user.userId).select('name email weight age gender experience');
+    const user = await User.findById(req.user.userId).select('name email weight age gender experience completedProfile');
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
