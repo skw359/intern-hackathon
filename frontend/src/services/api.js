@@ -46,29 +46,15 @@ export const login = async (email, password) => {
 export const register = async (name, email, password) => {
   try {
     const response = await api.post('/auth/register', { name, email, password });
-    const loginResponse = await api.post('/auth/login', { email, password }); 
-    const { token, userId, name: userName } = loginResponse.data;
-    localStorage.setItem('token', token);
-    localStorage.setItem('userId', userId);
-    localStorage.setItem('name', userName);
-    return loginResponse.data; 
+    return response.data;
   } catch (error) {
     throw new Error(`Registration failed: ${error.response?.data?.message || error.message}`);
   }
 };
 
-export const getUserProfile = async () => {
-  try {
-    const response = await api.get('/me');
-    return response.data;
-  } catch (error) {
-    throw new Error(`Failed to fetch profile: ${error.response?.data?.message || error.message}`);
-  }
-};
-
 export const updateUserProfile = async (profileData) => {
   try {
-    const response = await api.put('/me', profileData);
+    const response = await api.post('/auth/profile', profileData);
     return response.data;
   } catch (error) {
     throw new Error(`Failed to update profile: ${error.response?.data?.message || error.message}`);
@@ -137,9 +123,10 @@ export const deleteWorkout = async (workoutId) => {
   }
 };
 
+// services/api.js 
 export const generateAndSaveWorkout = async (description, date) => {
   const res = await api.post('/generateWorkout', { description, date });
-  return res.data;
+  return res.data;  // the newly created Workout object
 };
 
 export default api;

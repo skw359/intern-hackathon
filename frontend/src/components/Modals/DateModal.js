@@ -9,37 +9,24 @@ export default function DateModal({
   setWorkoutTitle, 
   exercises, 
   onExerciseAdd, 
-  onExerciseChange, 
   onExerciseRemove, 
+  onExerciseChange, 
   onSubmit, 
   error,
-  isSubmitting,
-  isEditing 
+  isSubmitting 
 }) {
   if (!show || !date) return null;
-
-  const formattedDate = new Date(date).toLocaleDateString('en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
 
   return (
     <div className="modal-overlay">
       <div className="modal">
         <div className="modal-header">
-          <h3 className="modal-title">{isEditing ? 'Update Workout' : 'Add Workout'} for {formattedDate}</h3>
-          <button 
-            className="close-button" 
-            onClick={onClose} 
-            disabled={isSubmitting}
-          >
-            &times;
-          </button>
+          <h3 className="modal-title">Add Workout for {date}</h3>
+          <button className="close-button" onClick={onClose} disabled={isSubmitting}>&times;</button>
         </div>
         <form className="modal-form" onSubmit={onSubmit}>
           {error && <div className="error-message">{error}</div>}
+          }
           <div className="form-group">
             <label htmlFor="workoutTitle">Workout Title</label>
             <input
@@ -147,9 +134,7 @@ export default function DateModal({
                 className="submit-button"
                 disabled={exercises.length === 0 || isSubmitting}
               >
-                {isSubmitting 
-                  ? (isEditing ? 'Updating...' : 'Adding...') 
-                  : (isEditing ? 'Update Workout' : 'Add Workout')}
+                {isSubmitting ? 'Adding Workout...' : 'Add Workout'}
               </button>
             </div>
           </div>
