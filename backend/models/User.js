@@ -24,12 +24,23 @@ const userSchema = new mongoose.Schema({
     required: [true, 'Password is required'],
     minlength: [6, 'Password must be at least 6 characters']
   },
-  survey: {
-    age: { type: Number },
-    weight: { type: Number },
-    experience: { type: String },
-    gender: { type: String },
-    completed: { type: Boolean, default: false }
+  weight: {
+    type: Number,
+    min: [20, 'Weight must be at least 20kg'],
+    max: [300, 'Weight cannot exceed 300kg']
+  },
+  age: {
+    type: Number,
+    min: [13, 'Must be at least 13 years old'],
+    max: [120, 'Age cannot exceed 120 years']
+  },
+  gender: {
+    type: String,
+    enum: ['male', 'female', 'other', 'prefer-not-to-say']
+  },
+  experience: {
+    type: String,
+    enum: ['beginner', 'intermediate', 'advanced', 'expert']
   },
   createdAt: {
     type: Date,

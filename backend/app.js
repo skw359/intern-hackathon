@@ -67,7 +67,11 @@ app.post('/api/auth/login', async (req, res) => {
     res.json({
       token,
       userId: user._id,
-      name: user.name
+      name: user.name,
+      weight: user.weight,
+      age: user.age,
+      gender: user.gender,
+      experience: user.experience
     });
   } catch (error) {
     console.error('Login error:', error);
@@ -83,39 +87,69 @@ app.post('/api/auth/login', async (req, res) => {
  */
 app.get('/api/me', authMiddleware, async (req, res) => {
   try {
-    const user = await User.findById(req.user.userId).select('-password');
+    const user = await User.findById(req.user.userId).select('name email weight age gender experience');
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-    res.json(user);
+    res.json({
+      name: user.name,
+      email: user.email,
+      weight: user.weight,
+      age: user.age,
+      gender: user.gender,
+      experience: user.experience
+    });
   } catch (error) {
     console.error('Error fetching user profile:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
 
-// Update user profile
+/**
+ * Update user profile endpoint
+ * @route PUT /api/me
+ * @middleware authMiddleware - Verifies JWT token
+ * @returns {object} Updated user profile data
+ */
 app.put('/api/me', authMiddleware, async (req, res) => {
   try {
-    const { age, weight, experience, gender } = req.body;
-    const user = await User.findByIdAndUpdate(
-      req.user.userId,
-      { 
-        'survey.age': age, 
-        'survey.weight': weight, 
-        'survey.experience': experience, 
-        'survey.gender': gender, 
-        'survey.completed': true 
-      },
-      { new: true }
-    );
-    res.json({ message: 'Profile updated', user });
+    const { weight, age, gender, experience } = req.body;
+    const user = await User.findById(req.user.userId);
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Update only provided fields
+    if (weight !== undefined) user.weight = weight;
+    if (age !== undefined) user.age = age;
+    if (gender !== undefined) user.gender = gender;
+    if (experience !== undefined) user.experience = experience;
+
+    await user.save();
+
+    res.json({
+      name: user.name,
+      email: user.email,
+      weight: user.weight,
+      age: user.age,
+      gender: user.gender,
+      experience: user.experience
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Failed to update profile' });
+    console.error('Error updating user profile:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
-// Register route
+/**
+ * User registration endpoint
+ * @route POST /api/auth/register
+ * @param {string} name - User's full name
+ * @param {string} email - User's email address
+ * @param {string} password - User's password
+ * @returns {object} Success message
+ */
 app.post('/api/auth/register', async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -140,31 +174,11 @@ app.post('/api/auth/register', async (req, res) => {
   }
 });
 
-// Save survey data
-app.post('/api/survey', authMiddleware, async (req, res) => {
-  try {
-    const { age, weight, experience, gender } = req.body;
-    const user = await User.findByIdAndUpdate(
-      req.user.userId,
-      {
-        survey: {
-          age,
-          weight,
-          experience,
-          gender,
-          completed: true
-        }
-      },
-      { new: true }
-    );
-    res.status(200).json({ message: 'Survey saved', survey: user.survey });
-  } catch (error) {
-    console.error('Survey error:', error);
-    res.status(500).json({ message: 'Failed to save survey with error ' + error.message });
-  }
-});
-
-// Health check
+/**
+ * Health check endpoint
+ * @route GET /api/health
+ * @returns {object} Status message
+ */
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
 });
@@ -200,12 +214,20 @@ app.get('/api/workouts', authMiddleware, async (req, res) => {
  */
 app.post('/api/makeWorkout', authMiddleware, async (req, res) => {
   try {
-    const { description, date } = req.body;
+    const { title, date, exercises } = req.body;
+
+    // Validate required fields
+    if (!title || !date || !Array.isArray(exercises) || exercises.length === 0) {
+      return res.status(400).json({ message: 'Title, date, and at least one exercise are required.' });
+    }
+
     const newWorkout = new Workout({
       userId: req.user.userId,
-      description,
-      date
+      title,
+      date,
+      exercises
     });
+
     await newWorkout.save();
     res.status(201).json(newWorkout);
   } catch (error) {
@@ -214,15 +236,26 @@ app.post('/api/makeWorkout', authMiddleware, async (req, res) => {
   }
 });
 
-// Update a workout
+/**
+ * Update existing workout
+ * @route PUT /api/workouts/:id
+ * @middleware authMiddleware - Verifies JWT token
+ * @param {string} id - Workout ID
+ * @param {object} req.body - Updated workout data
+ * @returns {object} Updated workout
+ */
 app.put('/api/workouts/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
-    const { description, date } = req.body;
+    const { title, date, exercises } = req.body;
+
+    if (!title || !date || !Array.isArray(exercises) || exercises.length === 0) {
+      return res.status(400).json({ message: 'Title, date, and at least one exercise are required.' });
+    }
 
     const updatedWorkout = await Workout.findOneAndUpdate(
       { _id: id, userId: req.user.userId },
-      { description, date },
+      { title, date, exercises },
       { new: true }
     );
 
