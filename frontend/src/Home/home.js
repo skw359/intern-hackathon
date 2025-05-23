@@ -216,7 +216,7 @@ export default function Home() {
     const newExercises = [...exercises];
     newExercises[index] = {
       ...newExercises[index],
-      [field]: field === 'sets' || field === 'reps' ? parseInt(value) || 0 : value
+      [field]: value
     };
     setExercises(newExercises);
   };

@@ -96,8 +96,8 @@ export default function DateModal({
                     <div className="form-group">
                       <label>Reps</label>
                       <input
-                        type="number"
-                        min="1"
+                        type="text"
+                        inputMode="numeric"
                         value={exercise.reps}
                         onChange={(e) => onExerciseChange(index, 'reps', e.target.value)}
                         required
