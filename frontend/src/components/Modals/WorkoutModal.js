@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './Modals.css';
 
 export default function WorkoutModal({ 
@@ -10,13 +10,48 @@ export default function WorkoutModal({
   error,
   isSubmitting 
 }) {
-  if (!show) return null;
+  const [isVisible, setIsVisible] = useState(false);
+  const [shouldRender, setShouldRender] = useState(false);
+
+  useEffect(() => {
+    if (show) {
+      // Reset states when opening
+      setIsVisible(false);
+      setShouldRender(true);
+      
+      // Force a reflow and start animation
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setIsVisible(true);
+        });
+      });
+    } else if (shouldRender) {
+      // Only start closing if we were actually rendered
+      setIsVisible(false);
+      const timer = setTimeout(() => {
+        setShouldRender(false);
+      }, 250);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [show, shouldRender]);
+
+  // Don't render anything if shouldRender is false
+  if (!shouldRender) return null;
 
   return (
-    <div className="modal-overlay">
-      <div className="modal">
+    <div 
+      className="modal-overlay"
+      style={{ opacity: isVisible ? 1 : 0 }}
+      onClick={onClose}
+    >
+      <div 
+        className="modal"
+        style={{ opacity: isVisible ? 1 : 0 }}
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="modal-header">
-          <h3 className="modal-title">Generate Workout Plan</h3>
+          <h3 className="modal-title">Create Workout</h3>
           <button 
             className="close-button" 
             onClick={onClose}
@@ -29,7 +64,7 @@ export default function WorkoutModal({
           {error && <div className="error-message">{error}</div>}
           
           <div className="form-group">
-            <label htmlFor="workoutDescription">What kind of workout would you like?</label>
+            <label htmlFor="workoutDescription">What kind of workout would you like? Include details like duration, focus areas, and any specific preferences.</label>
             <textarea
               id="workoutDescription"
               value={workoutDescription}
@@ -42,7 +77,7 @@ export default function WorkoutModal({
           </div>
           <div className="form-actions">
             <div className="disclaimer">
-              Include details like duration, focus areas, and any specific preferences
+              
             </div>
             <div className="button-group">
               <button 
@@ -58,7 +93,7 @@ export default function WorkoutModal({
                 className="submit-button"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? 'Generating Plan...' : 'Generate Plan'}
+                {isSubmitting ? 'Creating...' : 'Create Workout'}
               </button>
             </div>
           </div>
