@@ -140,7 +140,11 @@ export default function DateModal({
               className="submit-button"
               disabled={exercises.length === 0 || isSubmitting}
               >
+<<<<<<< Updated upstream
               {isSubmitting
+=======
+                {isSubmitting
+>>>>>>> Stashed changes
                 ? isEditing ? 'Saving Workout...' : 'Adding Workout...'
                 : isEditing ? 'Save Workout' : 'Add Workout'}
               </button>

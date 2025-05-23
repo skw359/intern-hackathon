@@ -10,6 +10,7 @@
   align-items: center;
   z-index: 1000;
   backdrop-filter: blur(4px);
+  transition: opacity 0.25s ease;
 }
 
 .modal {
@@ -23,6 +24,7 @@
   overflow-y: auto;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   margin: 1rem;
+  transition: opacity 0.25s ease;
 }
 
 .modal-header {
