@@ -13,7 +13,8 @@ export default function DateModal({
   onExerciseChange, 
   onSubmit, 
   error,
-  isSubmitting 
+  isSubmitting,
+  isEditing
 }) {
   if (!show || !date) return null;
 
@@ -101,8 +102,8 @@ export default function DateModal({
                     <div className="form-group">
                       <label>Reps</label>
                       <input
-                        type="number"
-                        min="1"
+                        type="text"
+                        inputMode="numeric"
                         value={exercise.reps}
                         onChange={(e) => onExerciseChange(index, 'reps', e.target.value)}
                         required
@@ -135,11 +136,13 @@ export default function DateModal({
                 Cancel
               </button>
               <button
-                type="submit"
-                className="submit-button"
-                disabled={exercises.length === 0 || isSubmitting}
+              type="submit"
+              className="submit-button"
+              disabled={exercises.length === 0 || isSubmitting}
               >
-                {isSubmitting ? 'Adding Workout...' : 'Add Workout'}
+              {isSubmitting
+                ? isEditing ? 'Saving Workout...' : 'Adding Workout...'
+                : isEditing ? 'Save Workout' : 'Add Workout'}
               </button>
             </div>
           </div>

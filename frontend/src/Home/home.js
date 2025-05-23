@@ -14,6 +14,7 @@ export default function Home() {
   const dayOfWeek = today.toLocaleDateString('en-US', { weekday: 'long' }); // Monday, Tuesday, etc
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showEventModal, setShowEventModal] = useState(false);
   const [showDateModal, setShowDateModal] = useState(false);
@@ -26,7 +27,6 @@ export default function Home() {
   const [exercises, setExercises] = useState([]);
   const [workouts, setWorkouts] = useState([]);
   const [error, setError] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState(null);
 
   useEffect(() => {
@@ -202,7 +202,7 @@ export default function Home() {
       name: '',
       description: '',
       sets: 1,
-      reps: ''
+      reps: '10'
     }]);
   };
 
@@ -326,6 +326,7 @@ export default function Home() {
         onSubmit={handleDateSubmit}
         error={error}
         isSubmitting={isSubmitting}
+        isEditing={isEditing}
       />
 
       <ProfileModal
