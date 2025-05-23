@@ -21,7 +21,12 @@ export default function DateModal({
     <div className="modal-overlay">
       <div className="modal">
         <div className="modal-header">
-          <h3 className="modal-title">Add Workout for {date}</h3>
+          <h3 className="modal-title">Add Workout for {new Date(date).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            timeZone: 'UTC'
+          })}</h3>
           <button className="close-button" onClick={onClose} disabled={isSubmitting}>&times;</button>
         </div>
         <form className="modal-form" onSubmit={onSubmit}>
@@ -96,8 +101,8 @@ export default function DateModal({
                     <div className="form-group">
                       <label>Reps</label>
                       <input
-                        type="text"
-                        inputMode="numeric"
+                        type="number"
+                        min="1"
                         value={exercise.reps}
                         onChange={(e) => onExerciseChange(index, 'reps', e.target.value)}
                         required
