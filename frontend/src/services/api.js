@@ -124,8 +124,8 @@ export const deleteWorkout = async (workoutId) => {
 };
 
 // services/api.js
-export const generateAndSaveWorkout = async (description, date, profile ) => {
-  const payload = { description, date, profile };
+export const generateAndSaveWorkout = async (description, dayOfWeek, date, profile ) => {
+  const payload = { description, dayOfWeek, date, profile };
   const res = await api.post('/generateWorkout', payload);
   return res.data;  // the newly created Workout object
 };

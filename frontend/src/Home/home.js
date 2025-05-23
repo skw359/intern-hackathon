@@ -11,6 +11,7 @@ import "./home.css";
 export default function Home() {
   const today = new Date();
   const todayStr = today.toISOString().slice(0, 10); // "YYYY-MM-DD"
+  const dayOfWeek = today.toLocaleDateString('en-US', { weekday: 'long' }); // Monday, Tuesday, etc
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -237,10 +238,10 @@ export default function Home() {
   };
 
   const calendarEvents = workouts.map(w => ({
-  title:  w.title  || 'Workout',
-  date:   w.date?.split('T')[0] || '1970-01-01',
-  _id:    w._id
-}));
+    title:  w.title  || 'Workout',
+    date:   w.date?.split('T')[0] || '1970-01-01',
+    _id:    w._id
+  }));
 
   const handleGenerateAndSave = async (e) => {
     e.preventDefault();
@@ -252,9 +253,10 @@ export default function Home() {
     try {
       const dateStr = selectedDate || todayStr;
       const { weight, age, gender, experience } = profileData;
-      const created = await generateAndSaveWorkout(workoutDescription, dateStr, { weight, age, gender, experience });
-      setWorkouts(ws => [...ws, created]);
+      const created = await generateAndSaveWorkout(workoutDescription, dayOfWeek, dateStr, { weight, age, gender, experience });
+      // setWorkouts(ws => [...ws, created]);
       handleCloseModal();
+      await loadWorkouts();
     } catch (err) {
       console.error('Generate+Save error:', err);
       setError('Failed to generate workout plan. Please try again.');
