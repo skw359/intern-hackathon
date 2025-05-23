@@ -5,8 +5,5 @@
     "build-backend": "cd backend && npm install",
     "build": "npm run build-frontend && npm run build-backend",
     "start": "cd backend && node app.js"
-  },
-  "dependencies": {
-    "@google/generative-ai": "^0.24.1"
   }
 }
