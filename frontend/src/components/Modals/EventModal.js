@@ -27,7 +27,12 @@ export default function EventModal({
           </button>
         </div>
         <div className="modal-content">
-          <p><strong>Date:</strong> {event.startStr}</p>
+          <p><strong>Date:</strong> {new Date(event.startStr).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            timeZone: 'UTC'
+          })}</p>
           <p><strong>Title:</strong> {workout.title}</p>
           <div className="exercises-list">
             <h4>Exercises:</h4>
