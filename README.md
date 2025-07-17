@@ -1,6 +1,6 @@
 # YouWork
 
-A personalized workout scheduling application built with React and Express.
+A personalized workout scheduling application built with React and Express. Won 1st place in AV's 2025 Hackathon 🥳
 - User authentication
 - Personalized workout scheduling
 - Interactive calendar interface
